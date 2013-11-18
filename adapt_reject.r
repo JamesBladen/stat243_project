@@ -1,18 +1,36 @@
+#' The EXAMPLE class
+#'
+#' This class contains an example. This line goes into the description
+#'
+#' This line and the next ones go into the details.
+#' This line thus appears in the details as well.
+#'
+#'@section Slots: 
+#'  \describe{
+#'    \item{\code{slot1}:}{Matrix of class \code{"numeric"}, containing data from slot1}
+#'    \item{\code{slot2}:}{Object of class \code{"character"}, containing data that needs to go in slot2.}
+#'  }
+#'
+#' @note You can still add notes
+#' @name EXAMPLE 
+#' @rdname EXAMPLE
+#' @aliases EXAMPLE-class
+#' @exportClass EXAMPLE
+#' @author Joris Meys
 
-
-#' 1. Initialize
-#'   i) x1, x2
-#'   ii) inputs: h(x) and h'(x), n (number of points to sample), optional: domain etc
-#'   iii) error checks: make sure that the function is concave up and the function lies within U(x) and L(x).  
-#'         Check that x1 has a positive slope and X2 has a negative slope. Check that the sample size is positive and an integer.
-#' 2) Objects/methods:
-#'   i) U(x) and S(x): z(x), equations for tangent lines
-#'   ii) List of x points
-#'   iii) list of sampled points
-#'   iv) l(x)
-#'   v) sample function from s(x) and uniform random number
-#'   vi) update steps
-#'   vii) error checking
+# 1. Initialize
+#   i) x1, x2
+#   ii) inputs: h(x) and h'(x), n (number of points to sample), optional: domain etc
+#   iii) error checks: make sure that the function is concave up and the function lies within U(x) and L(x).  
+#         Check that x1 has a positive slope and X2 has a negative slope. Check that the sample size is positive and an integer.
+# 2) Objects/methods:
+#   i) U(x) and S(x): z(x), equations for tangent lines
+#   ii) List of x points
+#   iii) list of sampled points
+#   iv) l(x)
+#   v) sample function from s(x) and uniform random number
+#   vi) update steps
+#   vii) error checking
 
 library(methods) 
 setClass( "adapt_reject_sample", 
