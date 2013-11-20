@@ -1,0 +1,13 @@
+Package: ARSpackage
+Type: Package
+Title: STAT 243 Final project
+Version: 1.0
+Date: 2013-11-18
+Author: J. Bladen, L. Felberg, H.W. Tsao, S. Tu
+Maintainer: L. Felberg <lfelberg@berkeley.edu>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+Depends:
+    methods
+Collate:
+    'adapt_reject.r'
