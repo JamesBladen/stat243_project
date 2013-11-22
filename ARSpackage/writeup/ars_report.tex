@@ -1,0 +1,58 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[margin=.90in]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor,cancel}
+\usepackage{amsmath}
+\usepackage{slashed}
+%\usepackage[section]{placeins}
+
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
+\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2}
+
+\usepackage{listings}             % Include the listings-package
+\lstset{language=matlab}          % Set your language ( you can change the language for each code-block optionally )
+\lstset{showspaces=false, showtabs=false, breaklines=true}
+
+\title{Stat 243: Building an adaptive rejection sampler}
+\author{James Bladen, Lisa Felberg, Siwei Tu, Hsin-Wei Tsao}
+\date{December 13, 2013}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+\subsection*{ (i) }
+
+\end{document}
+
+
+%\begin{lstlisting}
+%x = 0:0.1:100;
+%m = 0:19;
+%
+%y = zeros(1,1001);
+%
+%for i = 1:1001
+%    xis = (0.05.*( 1 + x( i )  ) ).^m ;
+%    y(i) = (((0.05.*( 1 + x( i )  ) ).^20 ) * ((1/x(i) + 10^4)/( 1/x(i) + 1 )))  /(sum( xis  ) + (((0.05.*( 1 + x( i )  ) ).^20 ) * ((1/x(i) + 10^4)/( 1/x(i) + 1 ))) );
+%end
+%
+%plot( x, y)
+%
+%\end{lstlisting}
+
+%\begin{figure}[htbp!]
+%  \centering
+%  \caption{ Plot of P(M*) versus x for strong binding}
+%    \includegraphics[width=.73\textwidth]{chem220_ps7_4_2}
+%\end{figure}
+
+
