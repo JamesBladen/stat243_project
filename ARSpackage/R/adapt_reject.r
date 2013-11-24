@@ -1,3 +1,36 @@
+
+######################################
+######################################
+
+#' The adapt_reject function
+#'
+#' This calls the class Cadapt_reject_sample and its methods.
+#'
+#' @param n_samples Number of samples desired from distribution
+#' @param log_fx Log of function to sample from
+#' @param log_fx_prime First derivative of log of function to sample from
+#' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
+
+a_r_s <- function( n_samples, log_fx, log_fx_prime, ... ){
+    
+    # Initialize new ARS class
+    ars_class <- new( Cadapt_reject_sample, n=n_samples, h_x = log_fx, h_prime = log_fx_prime )
+    
+    # While we do not have enough n samples, continue to sample
+    while( length( ars_class@output < n ) ){
+        ars_class@u_x <- ars_class@upper()
+        ars_class@s_x <- ars_class@s()
+        ars_class@samples <- ars_class@sample()
+        ars_class@u_x_star <- ars_class@upper()
+        ars_class@u_x_star <- ars_class@lower()
+        ars_class@acc_rej()
+        ars_class@update
+    }
+    
+    return( ars_class )
+}
+
+
 #' The adapt_reject class
 #'
 #' This class contains all the methods used to perform an AR sampling.  
@@ -48,50 +81,46 @@
 #' @rdname adapt_reject_sample
 #' @aliases Cadapt_reject_sample
 #' @exportClass Cadapt_reject_sample
-#' @return S4 \code{adapt_reject_sample} object; a vector containing
-#'      \item{n} points sampled from the f(x) distribution
+
 
 library(methods) 
 setClass( "Cadapt_reject_sample", 
   representation( n = "numeric", h_x = "function", h_prime="function" ), 
   prototype=prototype( n=50L, h_x = function(x,mu=0, sigma=1){-1/(2*sigma^2)*(x-mu)^2}, 
-                       h_prime = function(x,mu=0, sigma=1){-1/sigma^2*(x-mu)} ) )
+                       h_prime = function(x,mu=0, sigma=1){-1/sigma^2*(x-mu)} ) 
+)
+
+
+######################################
+######################################
+
+#' Cadapt_reject_sample initialization
+#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
+#' @rdname ars-methods
+
+setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, h_prime) {
+     .Object@n <- n
+     .Object@output <- vector()
+     .Object@h_x <- h_x
+     .Object@h_prime <- h_prime
+     .Object@z <- vector()
+     # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
+     .Object@x <- .Object@gen_x( )
+     validObject(.Object)
+	.Object
+})
+   
+
+######################################
+######################################
+
+#' Validity checks for S4 \code{adapt_reject_sample} object
+#' @param object An \code{adapt_reject_sample} object
 
 validity_ars <- function(object) {
    # checking for non-integer values
   if( is.integer( n ) == FALSE  ) { stop( "Input number of steps is not an integer" ) }
   if(  n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
-}
-setValidity("Cadapt_reject_sample", validity_ars)
+} 
 
-######################################
-######################################
-
-#' The adapt_reject function
-#'
-#' This calls the class Cadapt_reject_sample and it's methods.
-#'
-#' @param n_samples Number of samples desired from distribution
-#' @param log_fx Log of function to sample from
-#' @param log_fx_prime First derivative of log of function to sample from
-#' @return S4 \code{adapt_reject_sample} object; a vector containing
-#'      \item{n} points sampled from the f(x) distribution
-
-a_r_s <- function( n_samples, log_fx, log_fx_prime, ... ){
-    
-    # Initialize new ARS class
-    ars_class <- new( Cadapt_reject_sample, n=n_samples, h_x = log_fx, h_prime = log_fx_prime )
-    
-    # While we do not have enough n samples, continue to sample
-    while( length( ars_class@output < n ) ){
-        ars_class@u_x <- ars_class@upper()
-        ars_class@s_x <- ars_class@s()
-        ars_class@samples <- ars_class@sample()
-        ars_class@u_x_star <- ars_class@upper()
-        ars_class@u_x_star <- ars_class@lower()
-        ars_class@acc_rej()
-        ars_class@update
-    }
-    
-    return( ars_class )
-}
+setValidity( "Cadapt_reject_sample", validity_ars )

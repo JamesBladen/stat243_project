@@ -1,10 +1,6 @@
 \name{Cadapt_reject_sample}
 \alias{Cadapt_reject_sample}
 \title{The adapt_reject class}
-\value{
-  S4 \code{adapt_reject_sample} object; a vector containing
-  \item{n} points sampled from the f(x) distribution
-}
 \description{
   This class contains all the methods used to perform an AR
   sampling.

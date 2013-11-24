@@ -15,10 +15,10 @@
 }
 \value{
   S4 \code{adapt_reject_sample} object; a vector containing
-  \item{n} points sampled from the f(x) distribution
+  \code{n} points sampled from the f(x) distribution
 }
 \description{
-  This calls the class Cadapt_reject_sample and it's
+  This calls the class Cadapt_reject_sample and its
   methods.
 }
 
