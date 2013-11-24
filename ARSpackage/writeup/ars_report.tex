@@ -31,6 +31,43 @@
 
 \subsection*{ (i) }
 
+Adaptive Rejection sampling was first introduced in 1992 by Gilks and Wild.  It was proposed as an alternative to vanilla rejection sampling for functions that are difficult to evaluate multiple times.  The objective of this method is to sample from a "difficult" distribution by representing it with tangent lines and evaluating the actual function as few times as possible.  The basic algorithm is as follows and is shown graphically below:
+
+\begin{center}
+	\begin{itemize}
+		\item{ Take the log of the function }
+		\item{ Select two starting points, $x_1$ and $x_2$ that are to the right and to the left of the function's maximum, respectively}
+		\item{ Determine the tangent lines of each x, the abscissa of those tangent lines, and the direct line connecting the x's }
+		\item{ Sample 2 random numbers, one from the uniform random number distribution and one from the tangent line distribution}
+		\item{}
+	\end{itemize}
+\end{center}
+
+
+%%%%%%%%%%%%%%%
+
+\section{Code Structure}
+
+\subsection*{ (i) }
+
+We decided to utilize the S4 class as a format 
+
+
+
+%%%%%%%%%%%%%%%
+
+\section{Testing}
+
+\subsection*{ (i) }
+
+
+%%%%%%%%%%%%%%%
+
+\section{Contributions}
+
+\subsection*{ (i) }
+
+
 \end{document}
 
 
