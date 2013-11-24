@@ -6,12 +6,8 @@
   \item{n} points sampled from the f(x) distribution
 }
 \description{
-  This file consists of the adapt_reject_sample class, the
-  function that calls it and the functions it uses.
-}
-\details{
-  It performs an adaptive rejection sampling process as
-  proposed by Wild and Gilks in 1992.
+  This class contains all the methods used to perform an AR
+  sampling.
 }
 \note{
   1. Initialize i) x1, x2 ii) inputs: h(x) and h'(x), n
@@ -38,6 +34,9 @@
   One needs pos deriv and one needs neg method 1: gen
   random number and calculate h_prime method 2: find 2
   stdevs from mean, check if they fit criteria
+
+  3. complete s(x) 4. need method to accept or reject and
+  update ( both outputs and z )
 }
 \section{Slots}{
   \describe{ \item{\code{n}:}{Variable of class
@@ -53,11 +52,5 @@
   function.} \item{\code{output}:}{Variable of class
   \code{"vector"}, containing sampled points to return to
   user.} }
-}
-\author{
-  J. Bladen, L. Felberg, H.W. Tsao, S. Tu
-}
-\references{
-  \url{http://faculty.chicagobooth.edu/hedibert.lopes/teaching/ccis2010/1992GilksWild.pdf}
 }
 

@@ -3,12 +3,10 @@
 \alias{ARSpackage}
 \docType{package}
 \title{
-What the package does (short line)
-~~ package title ~~
+{ARSpackage:} an Adaptive Rejection Sampler
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+Final project for Statistics 243, an R package that performs adaptive rejection sampling, first proposed by Gilks and Wild in 1992.
 }
 \details{
 \tabular{ll}{
@@ -16,25 +14,21 @@ Package: \tab ARSpackage\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
 Date: \tab 2013-11-18\cr
-License: \tab What license is it under?\cr
+License: \tab Wutt \cr
 Depends: \tab methods\cr
+Collate: \tab 'adapt_reject.r', 'ARS_methods.r' \cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
 }
 \author{
-Who wrote it
-
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
+J. Bladen, L. Felberg, H.W. Tsao, S. Tu
+Maintainer: L. Felberg <lfelberg@berkeley.edu>
 }
 \references{
-~~ Literature or other references for background information ~~
+Gilks, Wild, 1992. \url{http://faculty.chicagobooth.edu/hedibert.lopes/teaching/ccis2010/1992GilksWild.pdf}.
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
-\keyword{ package }
+\keyword{ package, rejection sampling }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+\url{https://github.com/paciorek/stat243-fall-2013/tree/master/project}
 }
 \examples{
 ~~ simple examples of the most important functions ~~
