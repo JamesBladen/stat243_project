@@ -34,6 +34,8 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, h_pri
      .Object@z <- vector()
      # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
      .Object@x <- .Object@gen_x( )
+     .Object@weights<-vector()
+     .Object@normalized_factor<-numeric()
 })
         
 ######################################
@@ -98,7 +100,15 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
     #Seprate the domain into 3 parts: [x_0,z[1]],[z[1],z[k-1]],[z[k-1],x_a],x_0 and x_a are lower and upper bounds of the domain. If domain is R, then x_0=-inf, x_a=inf
     #Use a forloop to calculate the integrations in [z[1],z[k-1]],each piece i is a line with slope h_prime(x[i]) and pass through the point (x[i],h(x[i])), and is from z[i-1] to z[i] 
     k <- length(object@x)
-    for (i in 2:(k-1)){
+    #Figure out the vector of z
+    z<-vector()
+    # k is number of xs
+    for (i in 1:(k-1)){
+        z[i+1]<-(object@h_x(object@x[i+1])-object@h_x(object@x[i])-object@x[i+1]*object@h_prime(object@x[i+1])+object@x[i]*obejct@h_prime(object@x[i]))/(object@h_prime(object@x[i])-object@h_prime(object@x[i+1]))
+    }
+    z[1]<-x_0
+    z[k+1]<-x_a
+    for (i in 1:k){
         piecewise_function<-function( x_prime, h_x_i, h_xprime_i, x_i ){
             exp(h_xprime_i*(x_prime-x_i)+ h_x_i )
         }
@@ -107,17 +117,11 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
         hx_p_i <- object@h_prime(object@x[i])
         xi <- object@x[i]
         
-        integration[i-1]<-integrate(piecewise_function,z[i-1],z[i], h_x_i=hx_i, h_xprime_i=hx_p_i, x_i=xi)[[1]]
-    }
-    #The function for u_x in [x_0,z[1]]
-    piecewise_function_1<-function(x_prime, h_x_1, h_xprime_1, x_1){
-        exp(object@h_prime(object@x[1])*(x_prime-object@x[1])+object@h_x(object@x[1]))
-    }
+        integration[i]<-integrate(piecewise_function,z[i],z[i+1], h_x_i=hx_i, h_xprime_i=hx_p_i, x_i=xi)[[1]]
+    }   
+        normalized_factor<-sum(integration) 
     
-    #The function for u_x in [z[k],x_a]
-    piecewise_function_k<-function(x_prime, h_x_k, h_xprime_k, x_k){
-        exp(object@h_prime(object@x[k])*(x_prime-object@x[k])+object@h_x(object@x[k]))
-    }
+        weights<-integration/normalized_factor
     
     # Calculating constants for integration    
     hx_1 <- object@h_prime(object@x[1])
@@ -127,10 +131,10 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
     hxprime_k <- object@h_prime(object@x[k])
     xk <- object@x[k]
     
-    #Add up all 3 parts
-    normalized_factor<-integrate(piecewise_function_1,x_0,z[1], hx_1, hxprime_1, x1)+integrate(piecewise_function_k,z[k-1],x_a, hx_k, hxprime_k, xk)+sum(integration)
     
-    weights <- 0
+    object@weights<-weights
+    object@normalized_factor<-normalized_factor
+    object@z<-z
 })
 
 ######################################
@@ -151,12 +155,7 @@ setGeneric("upper", function(object){standardGeneric("upper")})
 
 
 setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
-    #Figure out the vector of z
-    z<-vector()
-    # k is number of xs
-    for (i in 1:(k-1)){
-        z[i]<-(object@h_x(object@x[i+1])-object@h_x(object@x[i])-object@x[i+1]*object@h_prime(object@x[i+1])+object@x[i]*obejct@h_prime(object@x[i]))/(object@h_prime(object@x[i])-object@h_prime(object@x[i+1]))
-    }
+
     #Calculate u of x star using the same method as we calculate l of x star
     M<-as.integer(x_star>z)
     J<-sum(M)
@@ -213,10 +212,19 @@ setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
     samples[1] <- runif( 1, min = 0, max = 1 )
     
     # Sample x_star from sk(x)
-    samples[2] <- object@sample_from_S(  )
+    k<-length(object@x)
+    region_x_star<-sample(1:k,1,prob=object@weights)
+    a<-object@h_prime(object@x[region_x_star])
+    b<-object@h(object@x[region_x_star])-object@h_prime(object@x[region_x_star])*object@x[region_x_star]
+    inverse_CDF<-function(x_prime){
+        (log(a*x_prime/(object@normalized_factor*exp(b))+exp(a*object@z[region_x_star])))/a
+    }
+    sample_uniform<-runif(1)
+    x_star<-inverse_CDF(sample_uniform) 
+    samples[2] <- x_star
     
     
-    return( 1 )  
+    return(samples)  
 } )
 
 ######################################
