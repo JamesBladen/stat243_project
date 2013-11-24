@@ -12,18 +12,5 @@ License: N/A for now...
 Depends:
     methods
 Collate:
-    'ars_methods.r
-    The
-    adapt_reject
-    function
-
-This
-    calls
-    the
-    class
-    Cadapt_reject_sample
-    and
-    its
-    methods.'
     'adapt_reject.r'
     'ars_methods.r'
