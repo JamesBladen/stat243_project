@@ -19,23 +19,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     
 } )
 
-######################################
-######################################
-
-#' Cadapt_reject_sample initialization
-#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
-
-setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, h_prime) {
-     .Object@n <- n
-     .Object@output <- vector()
-     .Object@h_x <- h_x
-     .Object@h_prime <- h_prime
-     .Object@z <- vector()
-     # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
-     .Object@x <- .Object@gen_x( )
-})
-        
+     
 ######################################
 ######################################
 

@@ -1,5 +1,5 @@
-\name{ARSpackage-package}
-\alias{ARSpackage-package}
+\name{ARSpackage}
+\alias{ARSpackage}
 \alias{ARSpackage}
 \docType{package}
 \title{
@@ -16,12 +16,11 @@ Version: \tab 1.0\cr
 Date: \tab 2013-11-18\cr
 License: \tab Wutt \cr
 Depends: \tab methods\cr
-Collate: \tab 'adapt_reject.r', 'ARS_methods.r' \cr
+Collate: \tab 'adapt_reject.r', 'ars_methods.r' 
 }
 }
 \author{
 J. Bladen, L. Felberg, H.W. Tsao, S. Tu
-Maintainer: L. Felberg <lfelberg@berkeley.edu>
 }
 \references{
 Gilks, Wild, 1992. \url{http://faculty.chicagobooth.edu/hedibert.lopes/teaching/ccis2010/1992GilksWild.pdf}.
@@ -29,7 +28,4 @@ Gilks, Wild, 1992. \url{http://faculty.chicagobooth.edu/hedibert.lopes/teaching/
 \keyword{ package, rejection sampling }
 \seealso{
 \url{https://github.com/paciorek/stat243-fall-2013/tree/master/project}
-}
-\examples{
-~~ simple examples of the most important functions ~~
 }
