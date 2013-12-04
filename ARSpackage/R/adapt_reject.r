@@ -1,4 +1,3 @@
-
 ######################################
 ######################################
 
@@ -11,10 +10,10 @@
 #' @param log_fx_prime First derivative of log of function to sample from
 #' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
 
-a_r_s <- function( n_samples, log_fx, log_fx_prime, ... ){
+a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
     
     # Initialize new ARS class
-    ars_class <- new( Cadapt_reject_sample, n=n_samples, h_x = log_fx, h_prime = log_fx_prime )
+    ars_class <- new( Cadapt_reject_sample, n=n_samples, h_x = log_fx, bounds, ... )
     
     # While we do not have enough n samples, continue to sample
     while( length( ars_class@output < n ) ){
@@ -30,7 +29,8 @@ a_r_s <- function( n_samples, log_fx, log_fx_prime, ... ){
     return( ars_class )
 }
 
-
+######################################
+######################################
 #' The adapt_reject class
 #'
 #' This class contains all the methods used to perform an AR sampling.  
@@ -39,7 +39,7 @@ a_r_s <- function( n_samples, log_fx, log_fx_prime, ... ){
 #'  \describe{
 #'    \item{\code{n}:}{Variable of class \code{"numeric"}, n, containing the number of points to sample}
 #'    \item{\code{h_x}:}{Function of class \code{"function"}, containing the log(f(x)) to sample from.}
-#'    \item{\code{h_prime}:}{Function of class \code{"function"}, containing the first derivative log(f(x)) to sample from.}
+#'    \item{\code{n}:}{Variable of class \code{"numeric"}, n, containing the bounds of the function}
 #'    \item{\code{x}:}{Variable of class \code{"vector"}, containing points used to draw lines.}
 #'    \item{\code{z}:}{Variable of class \code{"vector"}, containing abscissae of upper bound function.}
 #'    \item{\code{output}:}{Variable of class \code{"vector"}, containing sampled points to return to user.}
@@ -85,11 +85,11 @@ a_r_s <- function( n_samples, log_fx, log_fx_prime, ... ){
 
 library(methods) 
 setClass( "Cadapt_reject_sample", 
-  representation( n = "numeric", h_x = "function", h_prime="function" ), 
-  prototype=prototype( n=50L, h_x = function(x,mu=0, sigma=1){-1/(2*sigma^2)*(x-mu)^2}, 
-                       h_prime = function(x,mu=0, sigma=1){-1/sigma^2*(x-mu)} ) 
+  representation( n = "numeric", h_x = "function", bounds = "numeric" ), 
+  prototype=prototype( n=50L, h_x = function(x,mu=0, sigma=1){-1/(2*sigma^2)*(x-mu)^2}, bounds=c(-Inf, Inf) ) 
 )
 
+# Log normal distribution is prototype
 
 ######################################
 ######################################
@@ -98,11 +98,17 @@ setClass( "Cadapt_reject_sample",
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' @rdname ars-methods
 
-setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, h_prime) {
+setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, bounds) {
      .Object@n <- n
      .Object@output <- vector()
+     # Input function
      .Object@h_x <- h_x
-     .Object@h_prime <- h_prime
+     # Bounds of function
+     .Object@bounds <- bounds
+     # H(x) and H'(x) evaluated at a few points
+     .Object@h_at_x <- vector()
+     .Object@hprime_at_x <- vector()
+     # abscissa of all points
      .Object@z <- vector()
      # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
      .Object@x <- .Object@gen_x( )
