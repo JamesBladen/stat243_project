@@ -13,17 +13,18 @@
 a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
     
     # Initialize new ARS class
-    ars_class <- new( Cadapt_reject_sample, n=n_samples, h_x = log_fx, bounds, ... )
+    ars_class <- new( "Cadapt_reject_sample", n=n_samples, h_x = log_fx, bounds, ... )
+    ars_class@x <- gen_x( ars_class )
+    
+    print( ars_class@output )
     
     # While we do not have enough n samples, continue to sample
-    while( length( ars_class@output < n ) ){
-        ars_class@u_x <- ars_class@upper()
-        ars_class@s_x <- ars_class@s()
-        ars_class@samples <- ars_class@sample()
-        ars_class@u_x_star <- ars_class@upper()
-        ars_class@u_x_star <- ars_class@lower()
-        ars_class@acc_rej()
-        ars_class@update
+    while( length( ars_class@output < n_samples ) ){
+
+        s_x( ars_class )
+        sample( ars_class )
+        update( ars_class )
+        
     }
     
     return( ars_class )
@@ -85,7 +86,7 @@ a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
 
 library(methods) 
 setClass( "Cadapt_reject_sample", 
-  representation( n = "numeric", h_x = "function", bounds = "numeric" ), 
+  representation( n = "numeric", h_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector" ), 
   prototype=prototype( n=50L, h_x = function(x,mu=0, sigma=1){-1/(2*sigma^2)*(x-mu)^2}, bounds=c(-Inf, Inf) ) 
 )
 
@@ -100,18 +101,21 @@ setClass( "Cadapt_reject_sample",
 
 setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, bounds) {
      .Object@n <- n
-     .Object@output <- vector()
      # Input function
      .Object@h_x <- h_x
      # Bounds of function
      .Object@bounds <- bounds
+     
+     # Values not input by the user
+     .Object@output <- vector()
      # H(x) and H'(x) evaluated at a few points
      .Object@h_at_x <- vector()
      .Object@hprime_at_x <- vector()
      # abscissa of all points
      .Object@z <- vector()
+     #  Random number for adapt/reject
+     .Object@samples <- vector()
      # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
-     .Object@x <- .Object@gen_x( )
      validObject(.Object)
 	.Object
 })
@@ -125,8 +129,8 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, bound
 
 validity_ars <- function(object) {
    # checking for non-integer values
-  if( is.integer( n ) == FALSE  ) { stop( "Input number of steps is not an integer" ) }
-  if(  n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
+  if( is.integer( object@n ) == FALSE  ) { stop( "Input number of steps is not an integer" ) }
+  if(  object@n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
 } 
 
 setValidity( "Cadapt_reject_sample", validity_ars )

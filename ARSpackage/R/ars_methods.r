@@ -1,3 +1,68 @@
+######################################
+######################################
+
+#' Cadapt_reject_sample show
+#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
+#' @rdname ars-methods
+
+setMethod("show", signature = "Cadapt_reject_sample", function(object) {
+    print(" The number of samples taken:")
+    print(object@n)
+    print(" The samples taken:")
+    print(object@output)
+} )
+
+
+######################################
+######################################
+
+#' Random generating first two points
+#' @param object An object
+
+setGeneric("gen_x", function(object){standardGeneric("gen_x")})
+
+
+######################################
+######################################
+
+#' Cadapt_reject_sample generating first two points
+#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
+#' @rdname ars-methods
+
+setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
+    # here we initialize x_12 as letters
+    x_12 <- c("l", "u")
+    
+    # If the user has input bounds, set xs to those values
+    if( (object@bounds[1] != -Inf) && (object@bounds[2] != Inf)  ){
+        x_12 <- object@bounds
+        return( as.numeric( x_12 ) )
+    }
+    # Set any given input bounds to x values
+    else if  ( ( object@bounds[1] == -Inf  ) && ( object@bounds[1] != Inf  ) ) 
+        x_12[2] <- object@bounds[2]
+    else if  ( ( object@bounds[1] != -Inf  ) && ( object@bounds[1] == Inf  ) ) 
+        x_12[1] <- object@bounds[1]
+    
+    # Find max if input bounds are not provided
+    if ( ( object@bounds[1] == -Inf  ) && ( object@bounds[1] == Inf  ) )
+        param <- 0
+    else if  ( ( object@bounds[1] == -Inf  ) && ( object@bounds[1] != Inf  ) ) 
+        param <- object@bounds[2]
+    else if  ( ( object@bounds[1] != -Inf  ) && ( object@bounds[1] == Inf  ) ) 
+        param <- object@bounds[1]
+    # Optimize h to find the max
+    h_max <- optim( par=param, object@h_x, method="BFGS" )[[1]]
+    
+    # Chose the other x value with respect to the max
+    if ( x_12[1] == "l" )    
+        x_12[1] <- h_max - 1
+    if ( x_12[2] == "u" )    
+        x_12[2] <- h_max + 1        
+    return( as.numeric( x_12 ) )
+} )
+
+
 
 ######################################
 ######################################
@@ -21,33 +86,11 @@ setMethod("eval_h", signature = "Cadapt_reject_sample", function(object) {
 #    if ( length( object@x ) )
     t <-p( object@x[length( object@x )])
     hh <- c(t[1],attr(t, "gradient")[1])
-    object@h_at_x[length( object@x )] <- hh[1]
-    object@hprime_at_x[length( object@x )] <- hh[2]
-    return( 1 )
+#    object@h_at_x[length( object@x )] <- hh[1]
+#    object@hprime_at_x[length( object@x )] <- hh[2]
+    return( hh )
 } )
 
-
-######################################
-######################################
-
-#' Error checking generic
-#' @param object An object
-
-setGeneric("error_check", function(object){standardGeneric("error_check")})
-
-
-######################################
-######################################
-
-#' Cadapt_reject_sample error_check
-#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
-
-
-setMethod("error_check", signature = "Cadapt_reject_sample", function(object) {
-    
-    return( 1 )
-} )
 
 ######################################
 ######################################
@@ -73,21 +116,26 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
     #Normalizing u_x
     #The basic idea is just to find out the integration of u_x on the domain by adding the integration of each piecewise of u_x
     #Seprate the domain into 3 parts: [x_0,z[1]],[z[1],z[k-1]],[z[k-1],x_a],x_0 and x_a are lower and upper bounds of the domain. If domain is R, then x_0=-inf, x_a=inf
-    #Use a forloop to calculate the integrations in [z[1],z[k-1]],each piece i is a line with slope h_prime(x[i]) and pass through the point (x[i],h(x[i])), and is from z[i-1] to z[i] 
+    #Use a forloop to calculate the integrations in [z[1],z[k-1]],each piece i is a line with slope h_prime(x[i]) and pass through the point (x[i],h(x[i])), and is from z[i-1] to z[i]
+    # k is number of xs 
     k <- length(object@x)
     #Figure out the vector of z
     z<-vector()
-    # k is number of xs
-    for (i in 1:(k-1)){
-        z[i+1]<-(object@h_x(object@x[i+1])-object@h_x(object@x[i])-object@x[i+1]*object@h_prime(object@x[i+1])+object@x[i]*obejct@h_prime(object@x[i]))/(object@h_prime(object@x[i])-object@h_prime(object@x[i+1]))
-    }
-    z[1]<-x_0
-    z[k+1]<-x_a
+    
+    x_low<-object@x[-k]
+    x_high<-object@x[-1]
+    h_at_x_low<-object@h_at_x[-k]
+    h_at_x_high<-object@h_at_x[-1]
+    hprime_at_x_low<-object@h_prime_at_x[-k]
+    hprime_at_x_high<-object@hprime_at_x[-1]
+    z_pirme<-(h_at_x_high-h_at_x_low-x_high*hprime_at_x_high+x_low*hprime_at_x_low)/(hprime_at_x_low-hprime_at_x_high)
+    z<-c(x_0,z_prime,x_a)
+    
     for (i in 1:k){
         piecewise_function<-function( x_prime, h_x_i, h_xprime_i, x_i ){
             exp(h_xprime_i*(x_prime-x_i)+ h_x_i )
         }
-    
+        
         hx_i <- object@h_x(object@x[i])
         hx_p_i <- object@h_prime(object@x[i])
         xi <- object@x[i]
@@ -106,10 +154,50 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
     hxprime_k <- object@h_prime(object@x[k])
     xk <- object@x[k]
     
+    
     object@weights<-weights
     object@normalized_factor<-normalized_factor
     object@z<-z
 })
+
+
+######################################
+######################################
+
+#' Sample generic
+#' @param object An object
+
+setGeneric("sample", function(object){standardGeneric("sample")})
+
+
+######################################
+######################################
+
+#' Cadapt_reject_sample sample
+#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
+#' @rdname ars-methods
+
+
+setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
+    samples <- vector()
+    # Sample uniform random number
+    object@samples[1] <- runif( 1, min = 0, max = 1 )
+    
+    # Sample x_star from sk(x)
+    k<-length(object@x)
+    region_x_star<-sample(1:k,1,prob=object@weights)
+    a<-object@h_prime(object@x[region_x_star])
+    b<-object@h(object@x[region_x_star])-object@h_prime(object@x[region_x_star])*object@x[region_x_star]
+    inverse_CDF<-function(x_prime){
+        (log(a*x_prime/(object@normalized_factor*exp(b))+exp(a*object@z[region_x_star])))/a
+    }
+    sample_uniform<-runif(1)
+    x_star<-inverse_CDF(sample_uniform) 
+    object@samples[2] <- x_star
+    
+    return( 1 )  
+} )
+
 
 ######################################
 ######################################
@@ -163,43 +251,6 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object, x_star) 
   return( l_x_star )
 } )
 
-######################################
-######################################
-
-#' Sanple generic
-#' @param object An object
-
-setGeneric("sample", function(object){standardGeneric("sample")})
-
-
-######################################
-######################################
-
-#' Cadapt_reject_sample sample
-#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
-
-
-setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
-    samples <- vector()
-    # Sample uniform random number
-    samples[1] <- runif( 1, min = 0, max = 1 )
-    
-    # Sample x_star from sk(x)
-    k<-length(object@x)
-    region_x_star<-sample(1:k,1,prob=object@weights)
-    a<-object@h_prime(object@x[region_x_star])
-    b<-object@h(object@x[region_x_star])-object@h_prime(object@x[region_x_star])*object@x[region_x_star]
-    inverse_CDF<-function(x_prime){
-        (log(a*x_prime/(object@normalized_factor*exp(b))+exp(a*object@z[region_x_star])))/a
-    }
-    sample_uniform<-runif(1)
-    x_star<-inverse_CDF(sample_uniform) 
-    samples[2] <- x_star
-    
-    return(samples)  
-} )
-
 
 ######################################
 ######################################
@@ -218,69 +269,35 @@ setGeneric("update", function(object){standardGeneric("update")})
 #' @rdname ars-methods
 
 setMethod("update", signature = "Cadapt_reject_sample", function(object) {
-    return( 1 )  
-} )
-
-
-######################################
-######################################
-
-#' Random generating first two points
-#' @param object An object
-
-setGeneric("gen_x", function(object){standardGeneric("gen_x")})
-
-
-######################################
-######################################
-
-#' Cadapt_reject_sample generating first two points
-#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
-
-setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
-    # here we initialize x_12 as letters
-    x_12 <- c("l", "u")
-
-    # If the user has input bounds, set xs to those values
-    if( (object@bounds[1] != -Inf) && (object@bounds[2] != Inf)  )
-        x_12 <- object@bounds
-    # Set any given input bounds to x values
-    else if  ( ( object@bounds[1] == -Inf  ) && ( object@bounds[1] != Inf  ) ) 
-        x_12[2] <- object@bounds[2]
-    else if  ( ( object@bounds[1] != -Inf  ) && ( object@bounds[1] == Inf  ) ) 
-        x_12[1] <- object@bounds[1]
+    w<-runif(1)
     
-    # Find max if input bounds are not provided
-    if ( ( object@bounds[1] == -Inf  ) && ( object@bounds[1] == Inf  ) )
-        param <- 0
-    else if  ( ( object@bounds[1] == -Inf  ) && ( object@bounds[1] != Inf  ) ) 
-        param <- object@bounds[2]
-    else if  ( ( object@bounds[1] != -Inf  ) && ( object@bounds[1] == Inf  ) ) 
-        param <- object@bounds[1]
-    # Optimize h to find the max
-    h_max <- optim( par=param, object@h_x, method="BFGS" )[[1]]
+    #calculate the ratio of lower to upper
+    ratio<-exp(object@lower( object, object@samples[2] ) - object@upper( object, object@samples[2]  ) )
     
-    # Chose the other x value with respect to the max
-    if ( x_12[1] == "l" )    
-        x_12[1] <- h_max - 1
-    if ( x_12[2] == "u" )    
-        x_12[2] <- h_max + 1        
-    return( as.numeric( x_12 ) )
+    if(w<=ratio){
+        #if we are within this first ratio, add to output
+        object@output<-c(object@output,object@samples[2])
+    }else{
+        #if we aren't in the first ratio, calc hstar and hprimestar
+        hvals <- object@eval_h()
+        hstar <- hvals[1]
+        hprimestar <- hvals[2]
+        
+        ratio<-exp( hstar-object@upper( object, object@samples[2]  ) )
+        
+        if(w<=ratio){
+            #if we accept, update our x, put xstar in output, and add hstar/hprimestar 
+            object@output<-c(object@output,object@samples[2])
+            object@x<-c(object@x,object@samples[2])
+            object@h_at_x<-c(object@h_at_x,hstar)
+            object@hprime_at_x<-c(object@hprime_at_x,hprimestar)
+        }else{
+            #update our x and add hstar hprimexstar
+            object@x<-c(object@x,object@samples[2])
+            object@h_at_x<-c(object@h_at_x,hstar)
+            object@hprime_at_x<-c(object@hprime_at_x,hprimestar)
+        }
+    } 
 } )
 
-     
-######################################
-######################################
-
-#' Cadapt_reject_sample show
-#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
-
-setMethod("show", signature = "Cadapt_reject_sample", function(object) {
-    print(" The number of samples taken:")
-    print(object@n)
-    print(" The samples taken:")
-    print(object@output)
-} )
 
