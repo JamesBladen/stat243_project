@@ -131,29 +131,11 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
     z_pirme<-(h_at_x_high-h_at_x_low-x_high*hprime_at_x_high+x_low*hprime_at_x_low)/(hprime_at_x_low-hprime_at_x_high)
     z<-c(x_0,z_prime,x_a)
     
-    for (i in 1:k){
-        piecewise_function<-function( x_prime, h_x_i, h_xprime_i, x_i ){
-            exp(h_xprime_i*(x_prime-x_i)+ h_x_i )
-        }
-        
-        hx_i <- object@h_x(object@x[i])
-        hx_p_i <- object@h_prime(object@x[i])
-        xi <- object@x[i]
-        
-        integration[i]<-integrate(piecewise_function,z[i],z[i+1], h_x_i=hx_i, h_xprime_i=hx_p_i, x_i=xi)[[1]]
-    }   
-    normalized_factor<-sum(integration) 
-    
-    weights<-integration/normalized_factor
-    
-    # Calculating constants for integration    
-    hx_1 <- object@h_prime(object@x[1])
-    hxprime_1 <- object@h_x(object@x[1])
-    x1 <- object@x[1]
-    hx_k <- object@h_x(object@x[k])
-    hxprime_k <- object@h_prime(object@x[k])
-    xk <- object@x[k]
-    
+    z_low<-z[-(k+1)]
+    z_high<-z[-1]
+    piecewise_integration<-(1/object@hprime_at_x)*(exp(object@hprime_at_x*z_high+object@h_at_x-object@hprime_at_x*object@x)-(exp(object@hprime_at_x*z_low+object@h_at_x-object@hprime_at_x*object@x)))
+    normalized_factor<-sun(piecewise_integration)
+    weights<-piecewise_integration/normalized_factor
     
     object@weights<-weights
     object@normalized_factor<-normalized_factor

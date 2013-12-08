@@ -11,23 +11,23 @@
 #' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
 
 a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
+  
+  # Initialize new ARS class
+  ars_class <- new( "Cadapt_reject_sample", n=n_samples, h_x = log_fx, bounds, ... )
+  ars_class <- gen_x( ars_class )
+  
+  print( ars_class@output )
+  
+  # While we do not have enough n samples, continue to sample
+  while( length( ars_class@output < n_samples ) ){
     
-    # Initialize new ARS class
-    ars_class <- new( "Cadapt_reject_sample", n=n_samples, h_x = log_fx, bounds, ... )
-    ars_class@x <- gen_x( ars_class )
+    ars_class <- s_x( ars_class )
+    ars_class <- sample( ars_class )
+    ars_class <- update( ars_class )
     
-    print( ars_class@output )
-    
-    # While we do not have enough n samples, continue to sample
-    while( length( ars_class@output < n_samples ) ){
-
-        s_x( ars_class )
-        sample( ars_class )
-        update( ars_class )
-        
-    }
-    
-    return( ars_class )
+  }
+  
+  return( ars_class )
 }
 
 ######################################
@@ -86,8 +86,8 @@ a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
 
 library(methods) 
 setClass( "Cadapt_reject_sample", 
-  representation( n = "numeric", h_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector" ), 
-  prototype=prototype( n=50L, h_x = function(x,mu=0, sigma=1){-1/(2*sigma^2)*(x-mu)^2}, bounds=c(-Inf, Inf) ) 
+          representation( n = "numeric", h_x = "formula", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric" ), 
+          prototype=prototype( n=50L, h_x = formula(y~-1/(sqrt(2*pi))*exp(x^2)), bounds=c(-20, 20) ) 
 )
 
 # Log normal distribution is prototype
@@ -100,26 +100,32 @@ setClass( "Cadapt_reject_sample",
 #' @rdname ars-methods
 
 setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, bounds) {
-     .Object@n <- n
-     # Input function
-     .Object@h_x <- h_x
-     # Bounds of function
-     .Object@bounds <- bounds
-     
-     # Values not input by the user
-     .Object@output <- vector()
-     # H(x) and H'(x) evaluated at a few points
-     .Object@h_at_x <- vector()
-     .Object@hprime_at_x <- vector()
-     # abscissa of all points
-     .Object@z <- vector()
-     #  Random number for adapt/reject
-     .Object@samples <- vector()
-     # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
-     validObject(.Object)
-	.Object
+  .Object@n <- n
+  # Input function
+  .Object@h_x <- h_x
+  # Bounds of function
+  .Object@bounds <- bounds
+  
+  # Values not input by the user
+  .Object@output <- vector()
+  # H(x) and H'(x) evaluated at a few points
+  .Object@h_at_x <- vector()
+  .Object@hprime_at_x <- vector()
+  # abscissa of all points
+  .Object@z <- vector()
+  #  Random number for adapt/reject
+  .Object@samples <- vector()
+  #the weight of each piece of the integration of the upper function
+  .Object@weights <- vector()
+  #the x points that we have evaluated h_x for
+  .Object@x <- vector()
+  #the integral of the upper bound function
+  .Object@normalized_factor <- numeric()
+  # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
+  validObject(.Object)
+  .Object
 })
-   
+
 
 ######################################
 ######################################
@@ -128,7 +134,7 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, bound
 #' @param object An \code{adapt_reject_sample} object
 
 validity_ars <- function(object) {
-   # checking for non-integer values
+  # checking for non-integer values
   if( is.integer( object@n ) == FALSE  ) { stop( "Input number of steps is not an integer" ) }
   if(  object@n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
 } 
