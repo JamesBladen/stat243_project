@@ -58,7 +58,7 @@ The image below is a graphical representation of the algorithm.
 
 \section{Code Structure}
 
-We decided to utilize the S4 class as a format for our code.  It was chosen because of the formal structure and modularity.  These properties also made it easy to test and create in a very piecewise manner.  The general structure to the code is a follows:  A wrapper function \textit{a\_r\_s} creates a new object of the type \textit{Cadapt\_reject\_sample}.  The program is run as follows:
+We decided to utilize the S4 class as a format for our code.  It was chosen because of the formal structure and modularity.  These properties also made it easy to test and create in a very piecewise manner.  The general structure to the code is a follows:  A wrapper function \textit{a\_r\_s} runs the sampling method.  The program is run as follows:
 
  $$ ars \leftarrow a\_r\_s( \mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{h\_x} = \{log \, of \, f(x) \, to \, sample\}, \mathbf{bounds}= \{ bds \, of \, f(x)\, \} ) $$
  
