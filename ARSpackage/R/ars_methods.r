@@ -32,19 +32,21 @@ setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
   object@x <- object@bounds
   
-  p<-deriv( object@h_x, c("x"), func =TRUE )
-  t <-p( object@x[1])
-  hh <- c(t[1],attr(t, "gradient")[1])
-  
-  object@h_at_x[1]<-hh[1]
-  object@hprime_at_x[1]<-hh[2]
   
   
-  t <-p( object@x[2])
-  hh <- c(t[1],attr(t, "gradient")[1])
   
-  object@h_at_x[2]<-hh[1]
-  object@hprime_at_x[2]<-hh[2]
+  h_x<-log(object@f_x(object@x[1]))
+  h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+  
+  
+  object@h_at_x[1]<-h_x
+  object@hprime_at_x[1]<-h_value
+  
+  h_x<-log(object@f_x(object@x[2]))
+  h_value <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
+  
+  object@h_at_x[2]<-h_x
+  object@hprime_at_x[2]<-h_value
   return(object)
 } )
 
@@ -56,7 +58,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
 #' eval_h checking generic
 #' @param object An object
 
-setGeneric("eval_h", function(object){standardGeneric("eval_h")})
+setGeneric("ev_h", function(object){standardGeneric("ev_h")})
 
 
 ######################################
@@ -66,15 +68,14 @@ setGeneric("eval_h", function(object){standardGeneric("eval_h")})
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' @rdname ars-methods
 
-setMethod("eval_h", signature = "Cadapt_reject_sample", function(object) {
-  # Make function called p that outputs the derivative of function at point x
-  p<-deriv( object@h_x, c("x"), func =TRUE )
-  #    if ( length( object@x ) )
-  t <-p( object@samples[2])
-  hh <- c(t[1],attr(t, "gradient")[1])
-  #    object@h_at_x[length( object@x )] <- hh[1]
-  #    object@hprime_at_x[length( object@x )] <- hh[2]
-  return( hh )
+setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
+  
+  
+  h_x<-log(object@f_x(object@samples[2]))
+  h_value <- (1/object@f_x(object@samples[2])) *genD(object@f_x,object@samples[2])$D[1]
+  
+  
+  return( c(h_x,h_value) )
 } )
 
 
@@ -238,7 +239,7 @@ setGeneric("update", function(object){standardGeneric("update")})
 #' @rdname ars-methods
 
 setMethod("update", signature = "Cadapt_reject_sample", function(object) {
-  w<-runif(1)
+  w<-object@samples[1]
   
   #calculate the ratio of lower to upper
   ratio<-exp(object@lower( object, object@samples[2] ) - object@upper( object, object@samples[2]  ) )
