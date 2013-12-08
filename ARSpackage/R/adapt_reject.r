@@ -10,10 +10,10 @@
 #' @param log_fx_prime First derivative of log of function to sample from
 #' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
 
-a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
+a_r_s <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
   
   # Initialize new ARS class
-  ars_class <- new( "Cadapt_reject_sample", n=n_samples, h_x = log_fx, bounds, ... )
+  ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, ... )
   ars_class <- gen_x( ars_class )
   
   print( ars_class@output )
@@ -86,8 +86,8 @@ a_r_s <- function( n_samples, log_fx, bounds=c(-Inf, Inf), ... ){
 
 library(methods) 
 setClass( "Cadapt_reject_sample", 
-          representation( n = "numeric", h_x = "formula", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric" ), 
-          prototype=prototype( n=50L, h_x = formula(y~-1/(sqrt(2*pi))*exp(x^2)), bounds=c(-20, 20) ) 
+          representation( n = "numeric", f_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric" ), 
+          prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
 )
 
 # Log normal distribution is prototype
@@ -99,10 +99,10 @@ setClass( "Cadapt_reject_sample",
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' @rdname ars-methods
 
-setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , h_x, bounds) {
+setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds) {
   .Object@n <- n
   # Input function
-  .Object@h_x <- h_x
+  .Object@f_x <- f_x
   # Bounds of function
   .Object@bounds <- bounds
   
