@@ -22,37 +22,121 @@ setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
 
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
-  object@x <- object@bounds 
   
-  if(object@bounds[1]==-Inf & object@bounds[2]==Inf)){
-        object@x[1]<-0
-        h_x<-log(object@f_x(object@x[1]))
-        deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+  if(object@bounds[1]==-Inf && object@bounds[2]==Inf){
     
-        if(sign(deriv1) ==1){
-            object@x[2]<- 1
-            deriv2 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
-        }else{
-            object@x[2]<- -1
-            deriv2 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
-        }
-    }
-
-    object@x[1]<-object@bounds[1]
-    object@x[2]<-object@bounds[2]
-
+    object@x[1]<-0
     h_x<-log(object@f_x(object@x[1]))
-    h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
-
+    deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     object@h_at_x[1]<-h_x
-    object@hprime_at_x[1]<-h_value
-
+    object@hprime_at_x[1]<-deriv1
+    
+    if(sign(deriv1==1)){
+      while(sign(deriv1)==1){
+        object@x[i]<- 1*10^(i-2)
+        h_x<-log(object@f_x(object@x[i]))
+        deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
+        
+        object@h_at_x[i]<-h_x
+        object@hprime_at_x[i]<-deriv1
+        i<-i+1
+      }
+    }else if(sign(deriv1)==-1){
+      while(sign(deriv1)==-1){
+        object@x[i]<- -1*10^(i-2)
+        h_x<-log(object@f_x(object@x[i]))
+        deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
+        
+        object@h_at_x[i]<-h_x
+        object@hprime_at_x[i]<-deriv1
+        i<-i+1
+      }
+    }else{
+      object@x[2]<- -1
+      h_x<-log(object@f_x(object@x[2]))
+      deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
+      object@h_at_x[2]<-h_x
+      object@hprime_at_x[2]<-deriv1
+      
+      object@x[3]<- 1
+      h_x<-log(object@f_x(object@x[3]))
+      deriv1 <- (1/object@f_x(object@x[3])) *genD(object@f_x,object@x[3])$D[1]
+      object@h_at_x[3]<-h_x
+      object@hprime_at_x[3]<-deriv1
+    }
+  }else if (object@bounds[1]==-Inf && object@bounds[2] !=Inf){
+    object@x[1]<-object@bounds[2]
+    h_x<-log(object@f_x(object@x[1]))
+    deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+    
+    object@h_at_x[1]<-h_x
+    object@hprime_at_x[1]<-deriv1
+    
+    if(sign(deriv1)==-1){
+      i<-2
+      while(sign(deriv1)==-1){
+        object@x[i]<- object@bounds[2]- 1*10^(i-2)
+        h_x<-log(object@f_x(object@x[i]))
+        deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
+        
+        object@h_at_x[i]<-h_x
+        object@hprime_at_x[i]<-deriv1
+        i<-i+1
+      }
+    }else{
+      object@x[2]<-object@bounds[2] -5
+      h_x<-log(object@f_x(object@x[2]))
+      deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
+      object@h_at_x[2]<-h_x
+      object@hprime_at_x[2]<-deriv1
+    }
+  }else if (object@bounds[1]!=-Inf && object@bounds[2] ==Inf){
+    object@x[1]<-object@bounds[1]
+    h_x<-log(object@f_x(object@x[1]))
+    deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+    
+    object@h_at_x[1]<-h_x
+    object@hprime_at_x[1]<-deriv1
+    
+    if(sign(deriv1)==1)
+    {
+      i<-2
+      while(sign(deriv1)==1){
+        object@x[i]<- object@bounds[1]+ 1*10^(i-2)
+        h_x<-log(object@f_x(object@x[i]))
+        deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
+        
+        object@h_at_x[i]<-h_x
+        object@hprime_at_x[i]<-deriv1
+        i<-i+1
+      }
+    }else{
+      object@x[2]<-object@bounds[1] +5
+      h_x<-log(object@f_x(object@x[2]))
+      deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
+      object@h_at_x[2]<-h_x
+      object@hprime_at_x[2]<-deriv1
+    }
+  }else if(object@bounds[1]!=-Inf && object@bounds[2] !=Inf){
+    object@x<-object@bounds
+    
+    h_x<-log(object@f_x(object@x[1]))
+    deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+    object@h_at_x[1]<-h_x
+    object@hprime_at_x[1]<-deriv1
+    
     h_x<-log(object@f_x(object@x[2]))
-    h_value <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
-
+    deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
     object@h_at_x[2]<-h_x
-    object@hprime_at_x[2]<-h_value
-    return(object)
+    object@hprime_at_x[2]<-deriv1
+    
+    
+  }
+  
+  
+  
+  
+  return(object)
 } )
 
 
@@ -127,7 +211,7 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
 ######################################
 ######################################
 
-setGeneric("sample", function(object){standardGeneric("sample")})
+setGeneric("sampling", function(object){standardGeneric("sampling")})
 
 #' Cadapt_reject_sample sample
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
@@ -142,8 +226,8 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
   # Sample x_star from sk(x)
   k<-length(object@x)
   region_x_star<-sample(1:k,1,prob=object@weights)
-  a<-object@hprime_at_x[region_x_star]
-  b<-object@h_at_x[region_x_star]-object@hprime_at_x[region_x_star]*object@x[region_x_star]
+  a<-object@mat_sorted[,3][region_x_star]
+  b<-object@mat_sorted[,2][region_x_star]-object@mat_sorted[,3][region_x_star]*object@mat_sorted[,1][region_x_star]
   inverse_CDF<-function(x_prime){
     (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
   }
@@ -164,8 +248,8 @@ setGeneric("upper", function(object){standardGeneric("upper")})
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 
-setMethod("upper", signature = "Cadapt_reject_sample", function(object, x_star) {
-  
+setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
+  x_star<-object@samples[2]
   #Calculate u of x star using the same method as we calculate l of x star
   M<-as.integer(x_star > z)
   J<-sum(M)
@@ -232,6 +316,6 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
       object@hprime_at_x<-c(object@hprime_at_x,hprimestar)
     }
   } 
-
-   return(object)
-  } )
+  
+  return(object)
+} )
