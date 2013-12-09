@@ -86,7 +86,7 @@ a_r_s <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
 
 library(methods) 
 setClass( "Cadapt_reject_sample", 
-          representation( n = "numeric", f_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric" ), 
+          representation( n = "numeric", f_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric",mat_sorted="matrix" ), 
           prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
 )
 
@@ -121,6 +121,8 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
   .Object@x <- vector()
   #the integral of the upper bound function
   .Object@normalized_factor <- numeric()
+  #The matrix of x, h_at_x and hprime_at_x sorted based on x
+  .Object@mat_sorted<-matrix()
   # determine x1 and x2, draw random numbers and then determine if their first derivatives are pos and neg.
   validObject(.Object)
   .Object
