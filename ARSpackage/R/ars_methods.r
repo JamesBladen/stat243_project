@@ -17,10 +17,6 @@ setMethod("show", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
-
-######################################
-######################################
-
 #' Cadapt_reject_sample generating first two points
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
@@ -50,10 +46,6 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("ev_h", function(object){standardGeneric("ev_h")})
 
-
-######################################
-######################################
-
 #' Cadapt_reject_sample eval_h
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
@@ -72,10 +64,6 @@ setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 
 setGeneric("s_x", function(object){standardGeneric("s_x")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample s(x)
 #' 
@@ -124,10 +112,6 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
 
 setGeneric("sample", function(object){standardGeneric("sample")})
 
-
-######################################
-######################################
-
 #' Cadapt_reject_sample sample
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
@@ -159,10 +143,6 @@ setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("upper", function(object){standardGeneric("upper")})
 
-
-######################################
-######################################
-
 #' Cadapt_reject_sample upper
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
@@ -176,14 +156,12 @@ setMethod("upper", signature = "Cadapt_reject_sample", function(object, x_star) 
   u_x_star<-object@h_at_x[J_plus_one]+(x_star-object@x[J_plus_one])*object@hprime_at_x[J_plus_one]
   return(u_x_star)
 } )
+
+
 ######################################
 ######################################
 
 setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample lower
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
@@ -202,10 +180,6 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object,x_star) {
 ######################################
 
 setGeneric("update", function(object){standardGeneric("update")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample update
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object

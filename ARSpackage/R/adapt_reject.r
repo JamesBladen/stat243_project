@@ -70,7 +70,7 @@ setClass( "Cadapt_reject_sample",
 ######################################
 ######################################
 
-#' Cadapt_reject_sample initialization: method to intialize the ARS class for sampling
+#' Cadapt_reject_sample initialization: method to intialize the ARS class for sampling.  Will store values input from user and will also initialize empty arrays for all other slots.
 #' 
 #' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
@@ -117,7 +117,7 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
 ######################################
 ######################################
 
-#' Validity checks for S4 \code{adapt_reject_sample} object
+#' Validity checks for S4 \code{adapt_reject_sample} object: want to ensure at creation that the number of samples desired is a positive integer
 #' @param object An \code{adapt_reject_sample} object
 
 validity_ars <- function(object) {
