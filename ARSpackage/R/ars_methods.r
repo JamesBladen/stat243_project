@@ -3,7 +3,6 @@
 
 #' Cadapt_reject_sample show
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 setMethod("show", signature = "Cadapt_reject_sample", function(object) {
   print(" The number of samples taken:")
@@ -16,9 +15,6 @@ setMethod("show", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' Random generating first two points
-#' @param object An object
-
 setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
 
@@ -27,13 +23,10 @@ setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
 #' Cadapt_reject_sample generating first two points
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+
 
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
-  object@x <- object@bounds
-  
-  
-  
+  object@x <- object@bounds 
   
   h_x<-log(object@f_x(object@x[1]))
   h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
@@ -55,9 +48,6 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' eval_h checking generic
-#' @param object An object
-
 setGeneric("ev_h", function(object){standardGeneric("ev_h")})
 
 
@@ -66,7 +56,6 @@ setGeneric("ev_h", function(object){standardGeneric("ev_h")})
 
 #' Cadapt_reject_sample eval_h
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
   
@@ -82,9 +71,6 @@ setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' S(x) generic
-#' @param object An object
-
 setGeneric("s_x", function(object){standardGeneric("s_x")})
 
 
@@ -96,7 +82,6 @@ setGeneric("s_x", function(object){standardGeneric("s_x")})
 #' Function to normalize the upper bounds of log(f(x))
 #' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 #' 
 
 setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
@@ -137,9 +122,6 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
 ######################################
 ######################################
 
-#' Sample generic
-#' @param object An object
-
 setGeneric("sample", function(object){standardGeneric("sample")})
 
 
@@ -148,7 +130,7 @@ setGeneric("sample", function(object){standardGeneric("sample")})
 
 #' Cadapt_reject_sample sample
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+
 
 
 setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
@@ -175,9 +157,6 @@ setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' Upper generic
-#' @param object An object
-
 setGeneric("upper", function(object){standardGeneric("upper")})
 
 
@@ -186,7 +165,6 @@ setGeneric("upper", function(object){standardGeneric("upper")})
 
 #' Cadapt_reject_sample upper
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 
 setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
@@ -202,9 +180,6 @@ setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' Lower generic
-#' @param object An object
-
 setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 
 
@@ -213,7 +188,6 @@ setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 
 #' Cadapt_reject_sample lower
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 setMethod("lower", signature = "Cadapt_reject_sample", function(object, x_star) {
   # find where x_star is in the range
@@ -228,9 +202,6 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object, x_star) 
 ######################################
 ######################################
 
-#' Update generic
-#' @param object An object
-
 setGeneric("update", function(object){standardGeneric("update")})
 
 
@@ -239,7 +210,7 @@ setGeneric("update", function(object){standardGeneric("update")})
 
 #' Cadapt_reject_sample update
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+
 
 setMethod("update", signature = "Cadapt_reject_sample", function(object) {
   w<-object@samples[1]

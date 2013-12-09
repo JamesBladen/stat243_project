@@ -3,12 +3,13 @@
 
 #' The adapt_reject function
 #'
-#' This calls the class Cadapt_reject_sample and its methods.
+#' This calls the class Cadapt_reject_sample and its methods.  The vector of samples is accessible via \var{ans output}.
 #'
-#' @param n_samples Number of samples desired from distribution
-#' @param log_fx Log of function to sample from
-#' @param log_fx_prime First derivative of log of function to sample from
+#' @param n_samples: Number of samples desired from distribution
+#' @param fx: Function to sample from
+#' @param bounds: Bounds of function of interest.  The default is an unbounded function
 #' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
+#' 
 
 a_r_s <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
   
@@ -52,45 +53,13 @@ a_r_s <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
 #'    \item{\code{output}:}{Variable of class \code{"numeric"}, containing sampled points to return to user.}
 #'    \item{\code{mat_sorted}:}{Variable of class \code{"matrix"}, containing x values, their corresponding h and h prime values, sorted by increasing x.}
 #'  }
-#' @note  1. Initialize
-#'   i) x1, x2
-#'   ii) inputs: h(x) and h'(x), n (number of points to sample), optional: domain etc
-#'   iii) error checks: make sure that the function is concave up and the function lies within U(x) and L(x).  
-#'         Check that x1 has a positive slope and X2 has a negative slope. Check that the sample size is positive and an integer.
-#' 2) Objects/methods:
-#'   i) U(x) and S(x): z(x), equations for tangent lines
-#'   ii) List of x points
-#'   iii) list of sampled points
-#'   iv) l(x)
-#'   v) sample function from s(x) and uniform random number
-#'   vi) update steps
-#'   vii) error checking
-#'   
-#' Current questions:
-#'  1.  How do we draw a random number from sk(x)
-#'          i) calculate the area under each piece (Sk(x))
-#'          ii) divide by total area (Stot(x))
-#'          iii) weights <- Sk(x)/Stot(x)
-#'          iv) sample(1:k+1 with weights) -> select piece
-#'          v) rejection sample within the piece
-#'          
-#'          OR maybe a package?? spatstat with rpoint
-#'          
-#'  2.  How do we find initial points for x1 and x2?? All we know right now is that they need to encompass the max?  One needs pos deriv and one needs neg
-#'      method 1: gen random number and calculate h_prime
-#'      method 2: find 2 stdevs from mean, check if they fit criteria
-#'      
-#'  3. complete s(x)
-#'  4. need method to accept or reject and update ( both outputs and z )
-#'  
 #'          
 #' @name Cadapt_reject_sample 
-#' @rdname adapt_reject_sample
 #' @aliases Cadapt_reject_sample
 #' @exportClass Cadapt_reject_sample
 
-
 library(methods) 
+library(numDeriv)
 setClass( "Cadapt_reject_sample", 
           representation( n = "numeric", f_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix" ), 
           prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
@@ -101,9 +70,14 @@ setClass( "Cadapt_reject_sample",
 ######################################
 ######################################
 
-#' Cadapt_reject_sample initialization
+#' Cadapt_reject_sample initialization: method to intialize the ARS class for sampling
+#' 
+#' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+#' @param n \code{numeric} determining the number of samples to obtain
+#' @param f_x \code{function} for distribution to sample from
+#' @param bounds \code{vector} of distribution bounds
+
 
 setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds) {
     # User inputs

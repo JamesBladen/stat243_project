@@ -1,10 +1,11 @@
 \name{upper}
 \alias{upper}
-\title{Upper generic}
+\title{Cadapt_reject_sample upper}
 \arguments{
-  \item{object}{An object}
+  \item{object}{\code{\linkS4class{Cadapt_reject_sample}}
+  object}
 }
 \description{
-  Upper generic
+  Cadapt_reject_sample upper
 }
 

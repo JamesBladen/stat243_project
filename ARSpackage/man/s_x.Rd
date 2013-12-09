@@ -1,10 +1,11 @@
 \name{s_x}
 \alias{s_x}
-\title{S(x) generic}
+\title{Cadapt_reject_sample s(x)}
 \arguments{
-  \item{object}{An object}
+  \item{object}{\code{\linkS4class{Cadapt_reject_sample}}
+  object}
 }
 \description{
-  S(x) generic
+  Function to normalize the upper bounds of log(f(x))
 }
 
