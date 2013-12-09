@@ -30,24 +30,42 @@ setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 #' @rdname ars-methods
 
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
-  object@x <- object@bounds
   
   
-  
-  
+  if(object@bounds[1]==-Inf & object@bounds[2]==Inf)){
+  object@x[1]<-0
   h_x<-log(object@f_x(object@x[1]))
-  h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+  deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
   
   
-  object@h_at_x[1]<-h_x
-  object@hprime_at_x[1]<-h_value
-  
-  h_x<-log(object@f_x(object@x[2]))
-  h_value <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
-  
-  object@h_at_x[2]<-h_x
-  object@hprime_at_x[2]<-h_value
-  return(object)
+  if(sign(deriv1) ==1){
+    object@x[2]<- 1
+    deriv2 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+  }else{
+    object@x[2]<- -1
+    deriv2 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+  }
+}
+
+
+object@x[1]<-object@bounds[1]
+object@x[2]<-object@bounds[2]
+
+
+
+h_x<-log(object@f_x(object@x[1]))
+h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+
+
+object@h_at_x[1]<-h_x
+object@hprime_at_x[1]<-h_value
+
+h_x<-log(object@f_x(object@x[2]))
+h_value <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
+
+object@h_at_x[2]<-h_x
+object@hprime_at_x[2]<-h_value
+return(object)
 } )
 
 
