@@ -130,6 +130,7 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
   object@normalized_factor<-normalized_factor
   object@z<-z
   object@mat_sorted<-mat_sort
+  object@piecewise_integration<-piecewise_integration
   return(object)
 })
 
@@ -137,21 +138,21 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
 ######################################
 ######################################
 
-#' Sample generic
+#' Sampling generic
 #' @param object An object
 
-setGeneric("sample", function(object){standardGeneric("sample")})
+setGeneric("sampling", function(object){standardGeneric("sampling")})
 
 
 ######################################
 ######################################
 
-#' Cadapt_reject_sample sample
+#' Cadapt_reject_sample sampling
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' @rdname ars-methods
 
 
-setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
+setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
   samples <- vector()
   # Sample uniform random number
   object@samples[1] <- runif( 1, min = 0, max = 1 )
@@ -162,7 +163,7 @@ setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
   a<-object@hprime_at_x[region_x_star]
   b<-object@h_at_x[region_x_star]-object@hprime_at_x[region_x_star]*object@x[region_x_star]
   inverse_CDF<-function(x_prime){
-    (log(a*x_prime/(object@normalized_factor*exp(b))+exp(a*object@z[region_x_star])))/a
+    (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
   }
   sample_uniform<-runif(1)
   x_star<-inverse_CDF(sample_uniform) 
