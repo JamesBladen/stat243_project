@@ -109,24 +109,27 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
   #Figure out the vector of z
   z<-vector()
   
-  x_low<-object@x[-k]
-  x_high<-object@x[-1]
-  h_at_x_low<-object@h_at_x[-k]
-  h_at_x_high<-object@h_at_x[-1]
-  hprime_at_x_low<-object@hprime_at_x[-k]
-  hprime_at_x_high<-object@hprime_at_x[-1]
+  mat<-cbind(object@x,object@h_at_x,object@hprime_at_x)
+  mat_sort<-mat[order(mat[,1]),]
+  x_low<-mat_sort[,1][-k]
+  x_high<-mat_sort[,1][-1]
+  h_at_x_low<-mat_sort[,2][-k]
+  h_at_x_high<-mat_sort[,2][-1]
+  hprime_at_x_low<-mat_sort[,3][-k]
+  hprime_at_x_high<-mat_sort[,3][-1]
   z_prime<-(h_at_x_high-h_at_x_low-x_high*hprime_at_x_high+x_low*hprime_at_x_low)/(hprime_at_x_low-hprime_at_x_high)
   z<-c(object@bounds[1],z_prime,object@bounds[2])
   
   z_low<-z[-(k+1)]
   z_high<-z[-1]
-  piecewise_integration<-(1/object@hprime_at_x)*(exp(object@hprime_at_x*z_high+object@h_at_x-object@hprime_at_x*object@x)-(exp(object@hprime_at_x*z_low+object@h_at_x-object@hprime_at_x*object@x)))
+  piecewise_integration<-(1/mat_sort[,3])*(exp(mat_sort[,3]*z_high+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])-(exp(mat_sort[,3]*z_low+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])))
   normalized_factor<-sum(piecewise_integration)
   weights<-piecewise_integration/normalized_factor
   
   object@weights<-weights
   object@normalized_factor<-normalized_factor
   object@z<-z
+  object@mat_sorted<-mat_sort
   return(object)
 })
 
@@ -156,8 +159,8 @@ setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
   # Sample x_star from sk(x)
   k<-length(object@x)
   region_x_star<-sample(1:k,1,prob=object@weights)
-  a<-object@h_prime(object@x[region_x_star])
-  b<-object@h(object@x[region_x_star])-object@h_prime(object@x[region_x_star])*object@x[region_x_star]
+  a<-object@hprime_at_x[region_x_star]
+  b<-object@h_at_x[region_x_star]-object@hprime_at_x[region_x_star]*object@x[region_x_star]
   inverse_CDF<-function(x_prime){
     (log(a*x_prime/(object@normalized_factor*exp(b))+exp(a*object@z[region_x_star])))/a
   }
