@@ -1,10 +1,11 @@
 \name{update}
 \alias{update}
-\title{Update generic}
+\title{Cadapt_reject_sample update}
 \arguments{
-  \item{object}{An object}
+  \item{object}{\code{\linkS4class{Cadapt_reject_sample}}
+  object}
 }
 \description{
-  Update generic
+  Cadapt_reject_sample update
 }
 

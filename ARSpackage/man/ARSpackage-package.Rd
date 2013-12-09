@@ -13,9 +13,8 @@ Final project for Statistics 243, an R package that performs adaptive rejection 
 Package: \tab ARSpackage\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2013-11-18\cr
-License: \tab Wutt \cr
-Depends: \tab methods\cr
+Date: \tab 2013-12-13\cr
+Depends: \tab methods, numDeriv\cr
 Collate: \tab 'adapt_reject.r', 'ars_methods.r' 
 }
 }
@@ -27,5 +26,6 @@ Gilks, Wild, 1992. \url{http://faculty.chicagobooth.edu/hedibert.lopes/teaching/
 }
 \keyword{ package, rejection sampling }
 \seealso{
+\url{https://bitbucket.org/lfelberg/stat243_final_proj} \cr
 \url{https://github.com/paciorek/stat243-fall-2013/tree/master/project}
 }

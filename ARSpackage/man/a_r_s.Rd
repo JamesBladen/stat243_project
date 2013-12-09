@@ -2,16 +2,16 @@
 \alias{a_r_s}
 \title{The adapt_reject function}
 \usage{
-  a_r_s(n_samples, log_fx, log_fx_prime, ...)
+  a_r_s(n_samples, fx, bounds = c(-Inf, Inf), ...)
 }
 \arguments{
-  \item{n_samples}{Number of samples desired from
+  \item{n_samples:}{Number of samples desired from
   distribution}
 
-  \item{log_fx}{Log of function to sample from}
+  \item{fx:}{Function to sample from}
 
-  \item{log_fx_prime}{First derivative of log of function
-  to sample from}
+  \item{bounds:}{Bounds of function of interest.  The
+  default is an unbounded function}
 }
 \value{
   S4 \code{adapt_reject_sample} object; a vector containing
@@ -19,6 +19,7 @@
 }
 \description{
   This calls the class Cadapt_reject_sample and its
-  methods.
+  methods.  The vector of samples is accessible via
+  \var{ans output}.
 }
 
