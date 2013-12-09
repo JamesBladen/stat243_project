@@ -1,10 +1,11 @@
 \name{lower}
 \alias{lower}
-\title{Lower generic}
+\title{Cadapt_reject_sample lower}
 \arguments{
-  \item{object}{An object}
+  \item{object}{\code{\linkS4class{Cadapt_reject_sample}}
+  object}
 }
 \description{
-  Lower generic
+  Cadapt_reject_sample lower
 }
 

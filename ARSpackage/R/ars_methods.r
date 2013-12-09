@@ -3,7 +3,6 @@
 
 #' Cadapt_reject_sample show
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 setMethod("show", signature = "Cadapt_reject_sample", function(object) {
   print(" The number of samples taken:")
@@ -16,38 +15,44 @@ setMethod("show", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' Random generating first two points
-#' @param object An object
-
 setGeneric("gen_x", function(object){standardGeneric("gen_x")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample generating first two points
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+
 
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
-  object@x <- object@bounds
+  object@x <- object@bounds 
   
-  
-  
-  
-  h_x<-log(object@f_x(object@x[1]))
-  h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
-  
-  
-  object@h_at_x[1]<-h_x
-  object@hprime_at_x[1]<-h_value
-  
-  h_x<-log(object@f_x(object@x[2]))
-  h_value <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
-  
-  object@h_at_x[2]<-h_x
-  object@hprime_at_x[2]<-h_value
-  return(object)
+  if(object@bounds[1]==-Inf & object@bounds[2]==Inf)){
+        object@x[1]<-0
+        h_x<-log(object@f_x(object@x[1]))
+        deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+    
+        if(sign(deriv1) ==1){
+            object@x[2]<- 1
+            deriv2 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+        }else{
+            object@x[2]<- -1
+            deriv2 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+        }
+    }
+
+    object@x[1]<-object@bounds[1]
+    object@x[2]<-object@bounds[2]
+
+    h_x<-log(object@f_x(object@x[1]))
+    h_value <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
+
+    object@h_at_x[1]<-h_x
+    object@hprime_at_x[1]<-h_value
+
+    h_x<-log(object@f_x(object@x[2]))
+    h_value <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
+
+    object@h_at_x[2]<-h_x
+    object@hprime_at_x[2]<-h_value
+    return(object)
 } )
 
 
@@ -55,18 +60,10 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' eval_h checking generic
-#' @param object An object
-
 setGeneric("ev_h", function(object){standardGeneric("ev_h")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample eval_h
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
   
@@ -82,21 +79,13 @@ setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' S(x) generic
-#' @param object An object
-
 setGeneric("s_x", function(object){standardGeneric("s_x")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample s(x)
 #' 
 #' Function to normalize the upper bounds of log(f(x))
 #' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 #' 
 
 setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
@@ -138,18 +127,11 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
 ######################################
 ######################################
 
-#' Sampling generic
-#' @param object An object
+setGeneric("sample", function(object){standardGeneric("sample")})
 
-setGeneric("sampling", function(object){standardGeneric("sampling")})
-
-
-######################################
-######################################
-
-#' Cadapt_reject_sample sampling
+#' Cadapt_reject_sample sample
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+
 
 
 setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
@@ -176,52 +158,37 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
 ######################################
 ######################################
 
-#' Upper generic
-#' @param object An object
-
 setGeneric("upper", function(object){standardGeneric("upper")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample upper
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
 
-setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
+setMethod("upper", signature = "Cadapt_reject_sample", function(object, x_star) {
   
   #Calculate u of x star using the same method as we calculate l of x star
-  M<-as.integer(x_star>z)
+  M<-as.integer(x_star > z)
   J<-sum(M)
   J_plus_one<-J+1
-  u_x_star<-object@h_x(object@x[J_plus_one])+(x_star-object@x[J_plus_one])*object@h_prime(object@x[J_plus_one])
+  u_x_star<-object@h_at_x[J_plus_one]+(x_star-object@x[J_plus_one])*object@hprime_at_x[J_plus_one]
   return(u_x_star)
 } )
 
-######################################
-######################################
 
-#' Lower generic
-#' @param object An object
+######################################
+######################################
 
 setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 
-
-######################################
-######################################
-
 #' Cadapt_reject_sample lower
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
 
-setMethod("lower", signature = "Cadapt_reject_sample", function(object, x_star) {
+setMethod("lower", signature = "Cadapt_reject_sample", function(object,x_star) {
   # find where x_star is in the range
   m <- as.integer( x_star > object@x )
-  j <- sum( n )
+  j <- sum( m )
   j_plus_one <- j + 1
-  l_x_star <- (( object@x[j_plus_one] - x_star)*object@h_x(j) + (x_star - object@x[j])*object@h_x(j_plus_one) ) / ( object@x(j_plus_one) - object@x(j) ) 
+  l_x_star <- (( object@x[j_plus_one] - x_star)*object@h_at_x[j] + (x_star- object@x[j])*object@h_at_x[j_plus_one] ) / ( object@x[j_plus_one] - object@x[j] ) 
   return( l_x_star )
 } )
 
@@ -229,18 +196,11 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object, x_star) 
 ######################################
 ######################################
 
-#' Update generic
-#' @param object An object
-
 setGeneric("update", function(object){standardGeneric("update")})
-
-
-######################################
-######################################
 
 #' Cadapt_reject_sample update
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-#' @rdname ars-methods
+
 
 setMethod("update", signature = "Cadapt_reject_sample", function(object) {
   w<-object@samples[1]
@@ -253,7 +213,7 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
     object@output<-c(object@output,object@samples[2])
   }else{
     #if we aren't in the first ratio, calc hstar and hprimestar
-    hvals <- object@eval_h()
+    hvals <- object@ev_h(object)
     hstar <- hvals[1]
     hprimestar <- hvals[2]
     
@@ -272,4 +232,6 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
       object@hprime_at_x<-c(object@hprime_at_x,hprimestar)
     }
   } 
-} )
+
+   return(object)
+  } )

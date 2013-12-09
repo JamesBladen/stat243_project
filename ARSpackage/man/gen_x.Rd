@@ -1,10 +1,11 @@
 \name{gen_x}
 \alias{gen_x}
-\title{Random generating first two points}
+\title{Cadapt_reject_sample generating first two points}
 \arguments{
-  \item{object}{An object}
+  \item{object}{\code{\linkS4class{Cadapt_reject_sample}}
+  object}
 }
 \description{
-  Random generating first two points
+  Cadapt_reject_sample generating first two points
 }
 
