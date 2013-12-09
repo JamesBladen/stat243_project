@@ -189,16 +189,15 @@ setGeneric("upper", function(object){standardGeneric("upper")})
 #' @rdname ars-methods
 
 
-setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
+setMethod("upper", signature = "Cadapt_reject_sample", function(object, x_star) {
   
   #Calculate u of x star using the same method as we calculate l of x star
-  M<-as.integer(x_star>z)
+  M<-as.integer(x_star > z)
   J<-sum(M)
   J_plus_one<-J+1
-  u_x_star<-object@h_x(object@x[J_plus_one])+(x_star-object@x[J_plus_one])*object@h_prime(object@x[J_plus_one])
+  u_x_star<-object@h_at_x[J_plus_one]+(x_star-object@x[J_plus_one])*object@hprime_at_x[J_plus_one]
   return(u_x_star)
 } )
-
 ######################################
 ######################################
 
@@ -215,12 +214,12 @@ setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' @rdname ars-methods
 
-setMethod("lower", signature = "Cadapt_reject_sample", function(object, x_star) {
+setMethod("lower", signature = "Cadapt_reject_sample", function(object,x_star) {
   # find where x_star is in the range
   m <- as.integer( x_star > object@x )
-  j <- sum( n )
+  j <- sum( m )
   j_plus_one <- j + 1
-  l_x_star <- (( object@x[j_plus_one] - x_star)*object@h_x(j) + (x_star - object@x[j])*object@h_x(j_plus_one) ) / ( object@x(j_plus_one) - object@x(j) ) 
+  l_x_star <- (( object@x[j_plus_one] - x_star)*object@h_at_x[j] + (x_star- object@x[j])*object@h_at_x[j_plus_one] ) / ( object@x[j_plus_one] - object@x[j] ) 
   return( l_x_star )
 } )
 
@@ -252,7 +251,7 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
     object@output<-c(object@output,object@samples[2])
   }else{
     #if we aren't in the first ratio, calc hstar and hprimestar
-    hvals <- object@eval_h()
+    hvals <- object@ev_h(object)
     hstar <- hvals[1]
     hprimestar <- hvals[2]
     
@@ -271,4 +270,6 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
       object@hprime_at_x<-c(object@hprime_at_x,hprimestar)
     }
   } 
-} )
+
+   return(object)
+  } )
