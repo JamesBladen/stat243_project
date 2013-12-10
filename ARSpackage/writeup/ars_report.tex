@@ -88,9 +88,19 @@ and
 \int_D e^{u_k(x')} dx' = \left.\sum_j \frac{1}{h'(x_j)} \,exp( h'(x_j)x + h(x_j) -x_j h'(x_j))  \right|_{z_{j-1}}^{z_j}.
 \end{displaymath}
 
+In the special case of $a=0$ which means that for $x \in [z_{j-1}, z_j]$, $u(x) = b $ where $b=h(x_j)$. \\Then
+\begin{displaymath}
+ \int_{z_{j-1}}^{z_j} \, e^{u(x)} dx =\left. e^bx_j\right|_{z_{j-1}}^{z_j} , 
+\end{displaymath}
+and, 
+\begin{displaymath}
+\int_D e^{u_k(x')} dx' =\left.\sum_j  e^bx_j\right|_{z_{j-1}}^{z_j}.
+\end{displaymath}
+
+
 \subsection*{ sampling method }
 In this method, we sample a new $x^{*}$ from the $s_{k}(x)$ by using inverse CDF of  $s_{k}(x)$ with a random value $u \sim unif(0,1)$. Moreover, the inverse CDF algorithm we use is as follow: \\
-Once we decided which interval $x^*$ falls in, we want to sample from $\frac{e^{u(x)}} {\int e^{u(x)} dx}$. Suppose $x^* \in [z_{j-1}, z_j]$, then $u(x) = ax+b $, where $a=h'(x_j)$ and $b=h(x_j)- x_j h'(x_j)$. \\
+Once we decided which interval $x^*$ falls in, we want to sample from $\frac{e^{u(x)}} {\int e^{u(x)} dx}$. Suppose $x^* \in [z_{j-1}, z_j]$, then $u(x) = ax+b $, where $a=h'(x_j)(\neq0)$ and $b=h(x_j)- x_j h'(x_j)$. \\
 Let
 \begin{displaymath}
 C=\int_{z_{j-1}}^{z_j} \, e^{u(x)} dx,
@@ -107,6 +117,12 @@ Then the inverse of $F(x')$ will be
 \begin{displaymath}
 \frac{\log\,(\frac{ac}{e^b}+e^{az_{j-1}})}{a}.
 \end{displaymath}
+
+
+In the special case of $a=0$ which means that for $x^* \in [z_{j-1}, z_j]$, $u(x) = b $ where $b=h(x_j)$. \\Then the pdf will be  be $ \frac{e^b}{c}x $ which is an uniform distribution in $[z_{j-1}, z_j]$. In this situation, we just sample $x^*$ from $unif \sim  (z_{j-1}, z_j)$.
+
+
+
 
 
 \subsection*{ upper method }
