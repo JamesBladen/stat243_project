@@ -1,6 +1,6 @@
 \name{initialize}
 \alias{initialize}
-\title{Cadapt_reject_sample initialization: method to intialize the ARS class for sampling}
+\title{Cadapt_reject_sample initialization: method to intialize the ARS class for sampling.  Will store values input from user and will also initialize empty arrays for all other slots.}
 \arguments{
   \item{object}{\code{\linkS4class{Cadapt_reject_sample}}
   object}
@@ -15,6 +15,8 @@
 }
 \description{
   Cadapt_reject_sample initialization: method to intialize
-  the ARS class for sampling
+  the ARS class for sampling.  Will store values input from
+  user and will also initialize empty arrays for all other
+  slots.
 }
 

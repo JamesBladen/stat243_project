@@ -2,7 +2,7 @@
 \usepackage[margin=.90in]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
 \usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
-\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{graphicx}				% Use pdf, png, jpg, or epsï¿½ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -60,7 +60,7 @@ The image below is a graphical representation of the algorithm.
 
 We decided to utilize the S4 class as a format for our code.  It was chosen because of the formal structure and modularity.  These properties also made it easy to test and create in a very piecewise manner.  The general structure to the code is a follows:  A wrapper function \textit{a\_r\_s} runs the sampling method.  The program is run as follows:
 
- $$ ars \leftarrow a\_r\_s( \mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{h\_x} = \{log \, of \, f(x) \, to \, sample\}, \mathbf{bounds}= \{ bds \, of \, f(x)\, \} ) $$
+ $$ ars \leftarrow a\_r\_s( \mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{f\_x} = \{f(x) \, to \, sample\}, \mathbf{bounds}= \{ bds \, of \, f(x)\, \} ) $$
  
  This will return a \textit{Cadapt\_reject\_sample} class which contains sampled points in \textit{ars@samples}.  The class itself contains all the methods and variables required to perform adaptive rejection sampling.  
  
@@ -73,14 +73,14 @@ If the target function is bounded only on left/right side, then set the bound as
 If the target function is unbounded on both sides, then set $x_{1}$, $x_{2}$ as $max\,  h(x)-1$, $max \, h(x)+1$.
 Here we find the maximum of $h(x)$ by using $optim(\, )$.
 
-\subsection*{ eval\_h method }
+\subsection*{ ev\_h method }
 In this method, we calculate the values of $h(x)$ and $h'(x)$ for any $x$.
 
 \subsection*{ s\_x method }
 In this method, we calculate $s_{k}(x)$ by normalizing $e^{ u_{k}(x)}$.
 
 \subsection*{ sample method }
-In this method, we sample a new $x^{*}$ from the $s_{k}(x)$ by using inverse cdf of  $s_{k}(x)$ with a random value $u \sim unif(0,1)$.
+In this method, we sample a new $x^{*}$ from the $s_{k}(x)$ by using inverse CDF of  $s_{k}(x)$ with a random value $u \sim unif(0,1)$.
 
 \subsection*{ upper method }
 In this method, we calculate the $u_{k}(x)$ for all $x$'s.
