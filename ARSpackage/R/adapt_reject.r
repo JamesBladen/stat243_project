@@ -17,18 +17,18 @@ a_r_s <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
   ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, ... )
   ars_class <- gen_x( ars_class )
   
-  print( ars_class@output )
+  #print( ars_class@output )
   
   # While we do not have enough n samples, continue to sample
-  while( length( ars_class@output < n_samples ) ){
+  while( length( ars_class@output) < n_samples ){
     
     ars_class <- s_x( ars_class )
     ars_class <- sampling( ars_class )
     ars_class <- update( ars_class )
     
   }
-  
-  return( ars_class )
+
+  return(  ars_class@output )
 }
 
 ######################################
@@ -124,7 +124,7 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
 
 validity_ars <- function(object) {
   # checking for non-integer values
-  if( is.integer( object@n ) == FALSE  ) { stop( "Input number of steps is not an integer" ) }
+  if( object@n%%1 != 0  ) { stop( "Input number of steps is not an integer" ) }
   if(  object@n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
 } 
 

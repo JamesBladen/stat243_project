@@ -1,20 +1,6 @@
 ######################################
 ######################################
 
-#' Cadapt_reject_sample show
-#' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-
-setMethod("show", signature = "Cadapt_reject_sample", function(object) {
-  print(" The number of samples taken:")
-  print(object@n)
-  print(" The samples taken:")
-  print(object@output)
-} )
-
-
-######################################
-######################################
-
 setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
 #' Cadapt_reject_sample generating first two points
@@ -199,6 +185,12 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
   z_low<-z[-(k+1)]
   z_high<-z[-1]
   piecewise_integration<-(1/mat_sort[,3])*(exp(mat_sort[,3]*z_high+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])-(exp(mat_sort[,3]*z_low+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])))
+  
+  
+  piecewise_integration[which(piecewise_integration=="NaN")]<-exp(mat_sort[,2][which(piecewise_integration=="NaN")]) *(z_high[which(piecewise_integration=="NaN")]-z_low[which(piecewise_integration=="NaN")])
+  
+  
+  
   normalized_factor<-sum(piecewise_integration)
   weights<-piecewise_integration/normalized_factor
   
@@ -230,12 +222,18 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
   k<-length(object@x)
   region_x_star<-sample(1:k,1,prob=object@weights)
   a<-object@mat_sorted[,3][region_x_star]
+  
+  if(a==0){
+    
+    x_star<-runif(1,object@z[region_x_star],object@z[region_x_star +1])
+  }else{
   b<-object@mat_sorted[,2][region_x_star]-object@mat_sorted[,3][region_x_star]*object@mat_sorted[,1][region_x_star]
   inverse_CDF<-function(x_prime){
     (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
   }
   sample_uniform<-runif(1)
   x_star<-inverse_CDF(sample_uniform) 
+  }
   object@samples[2] <- x_star
   
   return( object )  
@@ -254,10 +252,9 @@ setGeneric("upper", function(object){standardGeneric("upper")})
 setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
   x_star<-object@samples[2]
   #Calculate u of x star using the same method as we calculate l of x star
-  M<-as.integer(x_star > z)
+  M<-as.integer(x_star > object@z)
   J<-sum(M)
-  J_plus_one<-J+1
-  u_x_star<-object@h_at_x[J_plus_one]+(x_star-object@x[J_plus_one])*object@hprime_at_x[J_plus_one]
+  u_x_star<-object@mat_sorted[,2][J]+(x_star-object@mat_sorted[,1][J])*object@mat_sorted[,3][J]
   return(u_x_star)
 } )
 
@@ -270,12 +267,13 @@ setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 #' Cadapt_reject_sample lower
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
-setMethod("lower", signature = "Cadapt_reject_sample", function(object,x_star) {
+setMethod("lower", signature = "Cadapt_reject_sample", function(object) {
   # find where x_star is in the range
+  x_star<-object@samples[2]
   m <- as.integer( x_star > object@x )
   j <- sum( m )
   j_plus_one <- j + 1
-  l_x_star <- (( object@x[j_plus_one] - x_star)*object@h_at_x[j] + (x_star- object@x[j])*object@h_at_x[j_plus_one] ) / ( object@x[j_plus_one] - object@x[j] ) 
+    l_x_star <- (( object@mat_sorted[,1][j_plus_one] - x_star)*object@mat_sorted[,2][j] + (x_star- object@mat_sorted[,1][j])*object@mat_sorted[,2][j_plus_one] ) / ( object@mat_sorted[,1][j_plus_one] - object@mat_sorted[,1][j] ) 
   return( l_x_star )
 } )
 
@@ -292,19 +290,25 @@ setGeneric("update", function(object){standardGeneric("update")})
 setMethod("update", signature = "Cadapt_reject_sample", function(object) {
   w<-object@samples[1]
   
+  if(sum(object@samples[2]< object@x)==0  || sum(object@samples[2]< object@x)==length(object@x))
+  {
+    ratio<--1
+  }else{
+    ratio<-exp(lower(object) - upper(object))
+  }
   #calculate the ratio of lower to upper
-  ratio<-exp(object@lower( object, object@samples[2] ) - object@upper( object, object@samples[2]  ) )
+  
   
   if(w<=ratio){
     #if we are within this first ratio, add to output
     object@output<-c(object@output,object@samples[2])
   }else{
     #if we aren't in the first ratio, calc hstar and hprimestar
-    hvals <- object@ev_h(object)
+    hvals <- ev_h(object)
     hstar <- hvals[1]
     hprimestar <- hvals[2]
     
-    ratio<-exp( hstar-object@upper( object, object@samples[2]  ) )
+    ratio<-exp(hstar-upper(object))
     
     if(w<=ratio){
       #if we accept, update our x, put xstar in output, and add hstar/hprimestar 
