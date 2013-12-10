@@ -146,7 +146,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("ev_h", function(object){standardGeneric("ev_h")})
 
-#' Cadapt_reject_sample eval_h
+#' Cadapt_reject_sample ev_h
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
@@ -245,7 +245,15 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
 setGeneric("upper", function(object){standardGeneric("upper")})
 
 #' Cadapt_reject_sample upper
+#' 
+#' This calculates the upper hull for \eqn{x^*} which we sample from the sampling method for adapt/reject.
+#' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
+#' @param x \code{vector} that we have evaluated h_x for
+#' @param x_star \code{numeric} random number for adapt/reject
+#' @param z \code{vector} abscissa of all points
+#' @return u_x_star \code{numeric} the upper hull for \eqn{x^*} 
+
 
 
 setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
@@ -265,7 +273,13 @@ setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
 setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 
 #' Cadapt_reject_sample lower
+#' 
+#' This calculates the lower hull for \eqn{x^*} which we sample from the sampling method for adapt/reject.
+#' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
+#' @param x \code{vector} that we have evaluated h_x for
+#' @param x_star \code{numeric} random number for adapt/reject
+#' @return l_x_star \code{numeric} the lower hull for \eqn{x^*} 
 
 setMethod("lower", signature = "Cadapt_reject_sample", function(object,x_star) {
   # find where x_star is in the range
@@ -283,6 +297,9 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object,x_star) {
 setGeneric("update", function(object){standardGeneric("update")})
 
 #' Cadapt_reject_sample update
+#' 
+#' 
+#' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 
