@@ -31,9 +31,11 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     object@h_at_x[1]<-h_x
     object@hprime_at_x[1]<-deriv1
     
+    
     if(sign(deriv1==1)){
-      while(sign(deriv1)==1){
-        object@x[i]<- 1*10^(i-2)
+      i<-2
+      while(sign(deriv1)!=-1){
+        object@x[i]<- 1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -42,8 +44,9 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else if(sign(deriv1)==-1){
-      while(sign(deriv1)==-1){
-        object@x[i]<- -1*10^(i-2)
+      i<-2
+      while(sign(deriv1)!=1){
+        object@x[i]<- -1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -52,13 +55,13 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else{
-      object@x[2]<- -1
+      object@x[2]<- -1/2
       h_x<-log(object@f_x(object@x[2]))
       deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
       object@h_at_x[2]<-h_x
       object@hprime_at_x[2]<-deriv1
       
-      object@x[3]<- 1
+      object@x[3]<- 1/2
       h_x<-log(object@f_x(object@x[3]))
       deriv1 <- (1/object@f_x(object@x[3])) *genD(object@f_x,object@x[3])$D[1]
       object@h_at_x[3]<-h_x
@@ -74,8 +77,8 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     
     if(sign(deriv1)==-1){
       i<-2
-      while(sign(deriv1)==-1){
-        object@x[i]<- object@bounds[2]- 1*10^(i-2)
+      while(sign(deriv1)!=1){
+        object@x[i]<- object@bounds[2]- 1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -84,7 +87,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else{
-      object@x[2]<-object@bounds[2] -5
+      object@x[2]<-object@bounds[2] -1/2
       h_x<-log(object@f_x(object@x[2]))
       deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
       object@h_at_x[2]<-h_x
@@ -101,8 +104,8 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     if(sign(deriv1)==1)
     {
       i<-2
-      while(sign(deriv1)==1){
-        object@x[i]<- object@bounds[1]+ 1*10^(i-2)
+      while(sign(deriv1)!=-1){
+        object@x[i]<- object@bounds[1]+ 1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -111,7 +114,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else{
-      object@x[2]<-object@bounds[1] +5
+      object@x[2]<-object@bounds[1] +1/2
       h_x<-log(object@f_x(object@x[2]))
       deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
       object@h_at_x[2]<-h_x
