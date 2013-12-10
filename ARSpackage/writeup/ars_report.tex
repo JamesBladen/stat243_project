@@ -2,7 +2,7 @@
 \usepackage[margin=.90in]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
 \usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
-\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{graphicx}				% Use pdf, png, jpg, or epsï¿½ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -38,8 +38,8 @@ Adaptive Rejection sampling was first introduced in 1992 by Gilks and Wild.  It 
 		\item{ Take the log of the function to sample from, $h(x) = log(f(x))$ }
 		\item{ Select two starting points, $x_1$ and $x_2$ that are to the right and to the left of the function's maximum, respectively}
 		\item{ Sample two random numbers, one from the uniform random number distribution, URN, and one from the  normalized exponential of the upper bounded line, $x^*$ }
-		\item{ If $URN \le exp(l(x*)-u(x*))$, accept and add $x^*$ to vector of x's }
-		\item{ Else if $URN \le exp(h(x*)-u(x*))$, accept and add $x^*$ to vector of x's }
+		\item{ If $URN \le exp(l(x*)-u(x*))$, accept and add $x^*$ to vector of $x$'s }
+		\item{ Else if $URN \le exp(h(x*)-u(x*))$, accept and add $x^*$ to vector of $x$'s }
 		\item{ Else reject }
 		\item{ Continue to sample numbers and testing procedure until a desired number of samples is obtained}
 	\end{itemize}
@@ -60,7 +60,7 @@ The image below is a graphical representation of the algorithm.
 
 We decided to utilize the S4 class as a format for our code.  It was chosen because of the formal structure and modularity.  These properties also made it easy to test and create in a very piecewise manner.  The general structure to the code is a follows:  A wrapper function \textit{a\_r\_s} runs the sampling method.  The program is run as follows:
 
- $$ ars \leftarrow a\_r\_s( \mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{h\_x} = \{log \, of \, f(x) \, to \, sample\}, \mathbf{bounds}= \{ bds \, of \, f(x)\, \} ) $$
+ $$ ars \leftarrow a\_r\_s( \mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{f\_x} = \{f(x) \, to \, sample\}, \mathbf{bounds}= \{ bds \, of \, f(x)\, \} ) $$
  
  This will return a \textit{Cadapt\_reject\_sample} class which contains sampled points in \textit{ars@samples}.  The class itself contains all the methods and variables required to perform adaptive rejection sampling.  
  
@@ -73,25 +73,52 @@ If the target function is bounded only on left/right side, then set the bound as
 If the target function is unbounded on both sides, then set $x_{1}$, $x_{2}$ as $max\,  h(x)-1$, $max \, h(x)+1$.
 Here we find the maximum of $h(x)$ by using $optim(\, )$.
 
-\subsection*{ eval\_h method }
+\subsection*{ ev\_h method }
 In this method, we calculate the values of $h(x)$ and $h'(x)$ for any $x$.
 
 \subsection*{ s\_x method }
-In this method, we calculate $s_{k}(x)$ by normalizing $e^{ u_{k}(x)}$.
+In this method, we calculate $s_{k}(x)$ by normalizing $e^{ u_{k}(x)}$. To normalize the $e^{ u_{k}(x)}$, we integrate each piece of $u(x)$ with following algorithm: \\
+First note that $u(x)$ is a piecewise defined function. It is linear in each piece of interval. Actually for $x \in [z_{j-1}, z_j]$, $u(x) = ax+b $, where $a=h'(x_j)$ and $b=h(x_j)- x_j h'(x_j)$. \\
+So for $x \in [z_{j-1}, z_j]$, 
+\begin{displaymath}
+\int_{z_{j-1}}^{z_j} \, e^{u(x)} dx =\left. \frac{1}{h'(x_j)} \, exp( h'(x_j)x + h(x_j) -x_j h'(x_j))  \right|_{z_{j-1}}^{z_j},
+\end{displaymath}
+and
+\begin{displaymath}
+\int_D e^{u_k(x')} dx' = \left.\sum_j \frac{1}{h'(x_j)} \,exp( h'(x_j)x + h(x_j) -x_j h'(x_j))  \right|_{z_{j-1}}^{z_j}.
+\end{displaymath}
 
-\subsection*{ sample method }
-In this method, we sample a new $x^{*}$ from the $s_{k}(x)$ by using inverse cdf of  $s_{k}(x)$ with a random value $u \sim unif(0,1)$.
+\subsection*{ sampling method }
+In this method, we sample a new $x^{*}$ from the $s_{k}(x)$ by using inverse CDF of  $s_{k}(x)$ with a random value $u \sim unif(0,1)$. Moreover, the inverse CDF algorithm we use is as follow: \\
+Once we decided which interval $x^*$ falls in, we want to sample from $\frac{e^{u(x)}} {\int e^{u(x)} dx}$. Suppose $x^* \in [z_{j-1}, z_j]$, then $u(x) = ax+b $, where $a=h'(x_j)$ and $b=h(x_j)- x_j h'(x_j)$. \\
+Let
+\begin{displaymath}
+C=\int_{z_{j-1}}^{z_j} \, e^{u(x)} dx,
+\end{displaymath}
+then the pdf is
+\begin{displaymath}
+\frac{e^{ax+b}}{C}.
+\end{displaymath}
+So the CDF
+\begin{displaymath}
+F'(x)=\int_{z_{j-1}}^{x'} \,  \frac{e^{ax+b}}{C} \, dx = \left. \frac{1}{ca}\, e^{ax+b} \, \right|_{z_{j-1}}^{x'} = \frac{ca}{e^b}\,(e^{ax'}-e^{az_{j-1}}).
+\end{displaymath}
+Then the inverse of $F(x')$ will be
+\begin{displaymath}
+\frac{\log\,(\frac{ac}{e^b}+e^{az_{j-1}})}{a}.
+\end{displaymath}
+
 
 \subsection*{ upper method }
-In this method, we calculate the $u_{k}(x)$ for all $x$'s.
+In this method, we calculate the $u_{k}(x)$ for $x^*$ which we sample from the sampling method.
 
 
 \subsection*{ lower method }
-In this method, we calculate the $l_{k}(x)$ for all $x$'s.
+In this method, we calculate the $l_{k}(x)$ for $x^*$ which we sample from the sampling method.
 
 
 \subsection*{ update method }
-In this method, we test the sample element $x^{*}$ from sample method. Once it is accepted, we add the $x^{*}$ into the $x$ set.
+In this method, we test the sample element $x^{*}$ from sampling method. Once it is accepted, we add the $x^{*}$ into the set of outputs.
 
 %%%%%%%%%%%%%%%
 

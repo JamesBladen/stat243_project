@@ -124,7 +124,7 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
 
 validity_ars <- function(object) {
   # checking for non-integer values
-  if( object@n%%1 != 0  ) { stop( "Input number of steps is not an integer" ) }
+  if( object@n %% 1 != 0  ) { stop( "Input number of steps is not an integer" ) }
   if(  object@n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
 } 
 

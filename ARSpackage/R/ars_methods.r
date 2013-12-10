@@ -224,16 +224,16 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
   a<-object@mat_sorted[,3][region_x_star]
   
   if(a==0){
-    
     x_star<-runif(1,object@z[region_x_star],object@z[region_x_star +1])
   }else{
-  b<-object@mat_sorted[,2][region_x_star]-object@mat_sorted[,3][region_x_star]*object@mat_sorted[,1][region_x_star]
-  inverse_CDF<-function(x_prime){
-    (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
+    b<-object@mat_sorted[,2][region_x_star]-object@mat_sorted[,3][region_x_star]*object@mat_sorted[,1][region_x_star]
+    inverse_CDF<-function(x_prime){
+      (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
+    }
+    sample_uniform<-runif(1)
+    x_star<-inverse_CDF(sample_uniform) 
   }
-  sample_uniform<-runif(1)
-  x_star<-inverse_CDF(sample_uniform) 
-  }
+  
   object@samples[2] <- x_star
   
   return( object )  
