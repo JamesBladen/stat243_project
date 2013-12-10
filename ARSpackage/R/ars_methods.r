@@ -182,24 +182,29 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
   #Use a forloop to calculate the integrations in [z[1],z[k-1]],each piece i is a line with slope h_prime(x[i]) and pass through the point (x[i],h(x[i])), and is from z[i-1] to z[i]
   # k is number of xs 
   k <- length(object@x)
-  #Figure out the vector of z
-  z<-vector()
   
+  #Create a matrix whose first column os x, second is h_at_x and third is hprime_at_x, and sorted based on the first column, x.
   mat<-cbind(object@x,object@h_at_x,object@hprime_at_x)
   mat_sort<-mat[order(mat[,1]),]
+  #Create the lower bound vector and the upper bound vector for sorted x, h_at_x and hprime_at_x
   x_low<-mat_sort[,1][-k]
   x_high<-mat_sort[,1][-1]
   h_at_x_low<-mat_sort[,2][-k]
   h_at_x_high<-mat_sort[,2][-1]
   hprime_at_x_low<-mat_sort[,3][-k]
   hprime_at_x_high<-mat_sort[,3][-1]
+  #Create a vector of z_1,z_2,...,z_(k-1)
+  z<-vector()
   z_prime<-(h_at_x_high-h_at_x_low-x_high*hprime_at_x_high+x_low*hprime_at_x_low)/(hprime_at_x_low-hprime_at_x_high)
+  #Complete z vector, where z_0 is user-defined lower bound and z_k in user-defined upper bound
   z<-c(object@bounds[1],z_prime,object@bounds[2])
-  
+  #Create lower bound vector and upper bound vector for z
   z_low<-z[-(k+1)]
   z_high<-z[-1]
+  #Calculate the integration on each interval of z, and sum up to find the integration of u_x on the entire domain, which is also the normalizing factor
   piecewise_integration<-(1/mat_sort[,3])*(exp(mat_sort[,3]*z_high+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])-(exp(mat_sort[,3]*z_low+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])))
   normalized_factor<-sum(piecewise_integration)
+  #Calculate the weight of the integration on each interval
   weights<-piecewise_integration/normalized_factor
   
   object@weights<-weights
@@ -219,27 +224,27 @@ setGeneric("sampling", function(object){standardGeneric("sampling")})
 #' Cadapt_reject_sample sample
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
+setMethod("sample", signature = "Cadapt_reject_sample", function(object) {
+samples <- vector()
+# Sample uniform random number
+object@samples[1] <- runif( 1, min = 0, max = 1 )
 
+k<-length(object@x)
+# Sample the interval for which x_star falls in 
+region_x_star<-sample(1:k,1,prob=object@weights)
+# Use inverse CDF method to sample x_star within the interval
+a<-object@hprime_at_x[region_x_star]
+b<-object@h_at_x[region_x_star]-object@hprime_at_x[region_x_star]*object@x[region_x_star]
+inverse_CDF<-function(x_prime){
+  (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
+}
+sample_uniform<-runif(1)
+x_star<-inverse_CDF(sample_uniform) 
+object@samples[2] <- x_star
 
-setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
-  samples <- vector()
-  # Sample uniform random number
-  object@samples[1] <- runif( 1, min = 0, max = 1 )
-  
-  # Sample x_star from sk(x)
-  k<-length(object@x)
-  region_x_star<-sample(1:k,1,prob=object@weights)
-  a<-object@mat_sorted[,3][region_x_star]
-  b<-object@mat_sorted[,2][region_x_star]-object@mat_sorted[,3][region_x_star]*object@mat_sorted[,1][region_x_star]
-  inverse_CDF<-function(x_prime){
-    (log(a*x_prime*object@piecewise_integration[region_x_star]/exp(b)+exp(a*object@z[region_x_star])))/a
-  }
-  sample_uniform<-runif(1)
-  x_star<-inverse_CDF(sample_uniform) 
-  object@samples[2] <- x_star
-  
-  return( object )  
+return( object )  
 } )
+
 
 
 ######################################
