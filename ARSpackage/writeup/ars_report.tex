@@ -9,6 +9,8 @@
 \usepackage{xcolor,cancel}
 \usepackage{amsmath}
 \usepackage{slashed}
+\usepackage{listings}
+\lstset{language=R}
 %\usepackage[section]{placeins}
 
 \newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
@@ -67,14 +69,19 @@ We decided to utilize the S4 class as a format for our code.  It was chosen beca
  First, two points are chosen as starting $x_1$ and $x_2$ values.  Next, $x^*$ values are drawn from the corresponding $u(x)$ distribution and the sampling criteria is tested.  This is repeated until the desired number of samples is obtained.    Brief descriptions of the most important methods are given below.  We've included more detailed source documentation as part of our solution as well (see \textit{a\_r\_sManual.pdf}).
 
 \subsection*{ gen\_x method }
-In this method, we generate two initial points i.e. $x_{1}$, $x_{2}$.
-If the target function is bounded on both sides, then set 2 bounds as $x_{1}$, $x_{2}$.
-If the target function is bounded only on left/right side, then set the bound as $x_{1}$/$x_{2}$, and set the other one as $max \, h(x)-1$/$max \,  h(x)+1$.
-If the target function is unbounded on both sides, then set $x_{1}$, $x_{2}$ as $max\,  h(x)-1$, $max \, h(x)+1$.
-Here we find the maximum of $h(x)$ by using $optim(\, )$.
+In this method, we generate two initial points i.e. $x_{1}$, $x_{2}$ according to user's input of bounds. \\
+There are 4 possible cases:
+  \begin{enumerate}
+  \item  If the target function is bounded on both sides, then we take 2 bounds as $x_{1}$, $x_{2}$.
+  \item  If the target function is bounded only on left side,  we take $x_{1}$ as the left bound, and find an $x$ on the right side of $x_{1}$ s.t. $h'(x_{1})h'(x)<0$, then take $x$ as $x_{2}$.
+  \item  If the target function is bounded only on right side, we take  $x_{1}$ as the right bound, and find an $x$ on the left side of $x_{1}$ s.t. $h'(x_{1})h'(x)<0$, then take $x$ as  $x_{2}$.
+  \item  If the target function is unbounded on both sides, we first set $x_{1}=0$. If $h'(0)>0$ then find an $x$ on the right side of $x_{1}$ s.t. $h'(x)<0$, then take $x$ as $x_{2}$. Similary, if $h'(0)<0$ then find an $x$ on the left side of $x_{1}$ s.t. $h'(x)>0$, then take $x$ as  $x_{2}$. In addition, if $h'(0)=0$ which means $h(x)$ is symmetric to $x=0$, then we set $(-\frac{1}{2},\frac{1}{2})$ to be 2 starting value.
+ \end{enumerate}
+Note that $h(x)=log(f(x))$ which is concave. So for any $x_1, x_2$, if $h'(x_1)h'(x_2)<0$, $x_1$ and $x_2$ would be on the different side of maximum of $h(x)$. And with the options of 2 to 4, we save $x$, $h(x)$ and $h'(x)$ for all $x$'s we computed in the process for later use.
+
 
 \subsection*{ ev\_h method }
-In this method, we calculate the values of $h(x)$ and $h'(x)$ for any $x$.
+In this method, we calculate the values of $h(x)$ and $h'(x)$ for any $x$ with $genD(\,)$ in package $numDeriv$.
 
 \subsection*{ s\_x method }
 In this method, we calculate $s_{k}(x)$ by normalizing $e^{ u_{k}(x)}$. To normalize the $e^{ u_{k}(x)}$, we integrate each piece of $u(x)$ with following algorithm: \\
@@ -141,6 +148,13 @@ In this method, we test the sample element $x^{*}$ from sampling method. Once it
 \section{Testing}
 
 For testing, we rigorously tested each method to ensure it was functioning properly.  To test the overall function, we sampled over a few well known distributions with different bounds, including:  normal, gamma, truncated normal.  The results are shown below.
+
+\begin{lstlisting}[frame=single]
+ars_class <- new( "Cadapt_reject_sample", n=100, f_x = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, Inf) )
+
+
+
+\end{lstlisting}
 
 
 %%%%%%%%%%%%%%%
