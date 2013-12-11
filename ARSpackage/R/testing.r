@@ -4,17 +4,46 @@
 #  FUNCTION TESTING
 
 # Different bounds
-ars <- a_r_s( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, Inf) )
+ars <- ars( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, Inf) )
 
-ars <- a_r_s( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-4, Inf) )
+ars <- ars( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-4, Inf) )
 
-ars <- a_r_s( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, 4) )
+ars <- ars( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, 4) )
 
-ars <- a_r_s( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-4, 4) )
+ars <- ars( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-4, 4) )
 
 # Different PDFs
 
+# Testing Standard Normal on [-2,2]
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, 2))
 
+hist(sample,breaks=100,freq=FALSE)
+curve((1/sqrt(2*pi)*exp((-(x-0)^2)/2)),from=-2,to=2,add=TRUE)
+
+# Testing Standard Normal on [-Inf,2]
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-Inf, 2))
+hist(sample,breaks=100,freq=FALSE)
+curve((1/sqrt(2*pi)*exp((-(x-0)^2)/2)),to=2,add=TRUE)
+
+# Testing Standard Normal on [2,Inf]
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(2, Inf))
+hist(sample,breaks=100,freq=FALSE)
+curve((1/sqrt(2*pi)*exp((-(x-0)^2)/2)),from=-2,add=TRUE)
+
+# Testing Standard Normal on [-Inf,Inf]
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-Inf, Inf))
+hist(sample,breaks=100,freq=FALSE)
+curve((1/sqrt(2*pi)*exp((-(x-0)^2)/2)),add=TRUE)
+
+# Testing Gamma(2,1) on interval[0.01,Inf]
+sample<-ars(10000,function(x){1/2*x*exp(-x)},c(0.01, Inf))
+hist(sample,breaks=100,freq=FALSE)
+curve((1/2*x*exp(-x)),from=0.01,add=TRUE)
+
+# Testing Gamma(2,1) on interval[0.01,8]
+sample<-ars(10000,function(x){1/2*x*exp(-x)},c(0.01, 8))
+hist(sample,breaks=100,freq=FALSE)
+curve((1/2*x*exp(-x)),from=0.01,to=8,add=TRUE)
 
 
 #####################################################
