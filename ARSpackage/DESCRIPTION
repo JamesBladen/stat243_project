@@ -10,4 +10,4 @@ Description: This package is a program that samples from a given distribution
     Wild and Gilks paper from 1992.
 License: N/A for now...
 Depends:
-    methods
+    methods, numDeriv

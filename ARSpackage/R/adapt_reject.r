@@ -80,6 +80,7 @@ setClass( "Cadapt_reject_sample",
 #' @param f_x \code{function} for distribution to sample from
 #' @param bounds \code{vector} of distribution bounds
 #' @param guess_of_mode \code{numeric} optional idea of where distribution is located
+#' @rdname ars_method
 
 
 setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds, guess_of_mode) {
@@ -130,6 +131,7 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
 #' 
 #'  The main objective of this validity check is to ensure at creation that the number of samples desired is a positive integer
 #' @param object An \code{adapt_reject_sample} object
+#' @rdname ars_method
 
 validity_ars <- function(object) {
   # checking for non-integer values
