@@ -1,7 +1,7 @@
 ######################################
 ######################################
 
-#' The adapt_reject function
+#' ars: The adapt_reject function
 #'
 #' This calls the class Cadapt_reject_sample and its methods.  The vector of samples is accessible via \var{ans output}.
 #'
@@ -11,7 +11,7 @@
 #' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
 #' 
 
-a_r_s <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
+ars <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
   
   # Initialize new ARS class
   ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, ... )
