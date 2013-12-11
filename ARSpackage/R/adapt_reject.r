@@ -3,18 +3,18 @@
 
 #' ars: The adapt_reject function
 #'
-#' This calls the class Cadapt_reject_sample and its methods.  The vector of samples is accessible via \var{ans output}.
+#' This calls the class Cadapt_reject_sample and its methods.  It returns a vector of samples generated via the Adaptive rejective sampling method. 
 #'
 #' @param n_samples: Number of samples desired from distribution
 #' @param fx: Function to sample from
 #' @param bounds: Bounds of function of interest.  The default is an unbounded function
-#' @return S4 \code{adapt_reject_sample} object; a vector containing \code{n} points sampled from the f(x) distribution
+#' @return a vector containing \code{n} points sampled from the f(x) distribution
 #' 
 
-ars <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
+ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=0, ... ){
   
   # Initialize new ARS class
-  ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, ... )
+  ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, guess_of_mode, ... )
   ars_class <- gen_x( ars_class )
   
   #print( ars_class@output )
@@ -52,6 +52,7 @@ ars <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
 #'    \item{\code{weights}:}{Variable of class \code{"vector"}, containing sampled points to return to user.}    
 #'    \item{\code{output}:}{Variable of class \code{"numeric"}, containing sampled points to return to user.}
 #'    \item{\code{mat_sorted}:}{Variable of class \code{"matrix"}, containing x values, their corresponding h and h prime values, sorted by increasing x.}
+#'  \item{\code{guess_of_mode}:}{Variable of class \code{"numeric"}, containing an optional user input guess of the mode of the distribution, should be within 200 of actual mode.}
 #'  }
 #'          
 #' @name Cadapt_reject_sample 
@@ -61,7 +62,7 @@ ars <- function( n_samples, fx, bounds=c(-Inf, Inf), ... ){
 library(methods) 
 library(numDeriv)
 setClass( "Cadapt_reject_sample", 
-          representation( n = "numeric", f_x = "function", bounds = "numeric" , output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix",piecewise_integration="vector" ), 
+          representation( n = "numeric", f_x = "function", bounds = "numeric" ,guess_of_mode="numeric" output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix",piecewise_integration="vector" ), 
           prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
 )
 
@@ -70,16 +71,18 @@ setClass( "Cadapt_reject_sample",
 ######################################
 ######################################
 
-#' Cadapt_reject_sample initialization: method to intialize the ARS class for sampling.  Will store values input from user and will also initialize empty arrays for all other slots.
+#' Cadapt_reject_sample initialization
 #' 
+#'  A method to intialize the ARS class for sampling.  Will store values input from user and will also initialize empty arrays for all other slots.
 #' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' @param n \code{numeric} determining the number of samples to obtain
 #' @param f_x \code{function} for distribution to sample from
 #' @param bounds \code{vector} of distribution bounds
+#' @param guess_of_mode \code{numeric} optional idea of where distribution is located
 
 
-setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds) {
+setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds, guess_of_mode) {
     # User inputs
     
     # number of samples to take
@@ -88,7 +91,10 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
     .Object@f_x <- f_x
     # Bounds of function
     .Object@bounds <- bounds
-  
+    #guess of where the density is located
+    .Object@guess_of_mode<-guess_of_mode
+    
+    
   # Values not input by the user
     
     #the x points that we have evaluated h_x for
@@ -110,6 +116,7 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
   .Object@mat_sorted<-matrix()
   #The vector of the integration of u_x on each piece
   .Object@piecewise_integration<-vector()
+    
   
   validObject(.Object)
   .Object
@@ -119,7 +126,9 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
 ######################################
 ######################################
 
-#' Validity checks for S4 \code{adapt_reject_sample} object: want to ensure at creation that the number of samples desired is a positive integer
+#' Validity checks for S4 \code{adapt_reject_sample} object
+#' 
+#'  The main objective of this validity check is to ensure at creation that the number of samples desired is a positive integer
 #' @param object An \code{adapt_reject_sample} object
 
 validity_ars <- function(object) {

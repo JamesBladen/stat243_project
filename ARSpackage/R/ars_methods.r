@@ -3,7 +3,9 @@
 
 setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
-#' Cadapt_reject_sample generating first two points
+#' gen_x
+#' 
+#' Cadapt_reject_sample method for generating first two points.  If the distribution is unbounded, then find the function's mode and pick points surrounding it.  If it's bounded on one side, we use the bound given and search until we find a point that corresponds to the opposite end of the domain with respect to their derivatives.  If bounded on both sides, use given bounds.  
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 
@@ -118,13 +120,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
     object@h_at_x[2]<-h_x
     object@hprime_at_x[2]<-deriv1
-    
-    
   }
-  
-  
-  
-  
   return(object)
 } )
 
@@ -135,7 +131,9 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("ev_h", function(object){standardGeneric("ev_h")})
 
-#' Cadapt_reject_sample eval_h
+#' ev_h
+#' 
+#' Cadapt_reject_sample method that evaluates the log(f(x)) for a given x and the derivative as well. 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
@@ -154,9 +152,9 @@ setMethod("ev_h", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("s_x", function(object){standardGeneric("s_x")})
 
-#' Cadapt_reject_sample s(x)
+#' s(x)
 #' 
-#' Function to normalize the upper bounds of log(f(x))
+#' Cadapt_reject_sample method to normalize the upper bounds of log(f(x)).  Multiple objective are performed here. The most important being the calculation of the abcissa vector Z.  Additionally, the weights and exact values of the piecewise integration of each interval and the normalization factor for the entire upper bound are calculated and the x's, their evaluations and their derivatives are sorted by x.  
 #' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 #' 
@@ -189,8 +187,6 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
   
   piecewise_integration[which(piecewise_integration=="NaN")]<-exp(mat_sort[,2][which(piecewise_integration=="NaN")]) *(z_high[which(piecewise_integration=="NaN")]-z_low[which(piecewise_integration=="NaN")])
   
-  
-  
   normalized_factor<-sum(piecewise_integration)
   weights<-piecewise_integration/normalized_factor
   
@@ -208,10 +204,10 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
 
 setGeneric("sampling", function(object){standardGeneric("sampling")})
 
-#' Cadapt_reject_sample sample
+#' sampling
+#' 
+#' Method to sample from s_x.  The basic algorithm is as follows: 1. Determine an interval to sample from using the weights of integration of the function on each interval, computed in the s_x method. 2.  Use inverse CDF method to sample from within the selected interval.  Return the object with new sample.
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
-
-
 
 setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
   samples <- vector()
@@ -245,7 +241,10 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("upper", function(object){standardGeneric("upper")})
 
-#' Cadapt_reject_sample upper
+#' upper
+#' 
+#' Cadapt_reject_sample method to evaluate the upper bound of x_star.
+#' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 
@@ -264,7 +263,9 @@ setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 
-#' Cadapt_reject_sample lower
+#' lower
+#' 
+#' Cadapt_reject_sample method to evaluate the lower bound of x_star.
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 setMethod("lower", signature = "Cadapt_reject_sample", function(object) {
@@ -283,7 +284,11 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object) {
 
 setGeneric("update", function(object){standardGeneric("update")})
 
-#' Cadapt_reject_sample update
+#' update
+#'
+#' Cadapt_reject_sample method to determine which ACC/REJ criteria a given sampled value fits into and updates the samples and x values accordingly.  
+#' 
+#' 
 #' @param object \code{\linkS4class{Cadapt_reject_sample}} object
 
 
@@ -296,9 +301,8 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
   }else{
     ratio<-exp(lower(object) - upper(object))
   }
-  #calculate the ratio of lower to upper
   
-  
+  #calculate the ratio of lower to upper  
   if(w<=ratio){
     #if we are within this first ratio, add to output
     object@output<-c(object@output,object@samples[2])
