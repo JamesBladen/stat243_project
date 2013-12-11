@@ -166,7 +166,7 @@ sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, Inf))
 \end{figure}
 
 
-First we test the standard normal with varying bounds , the code to do so and the histogram of the resulting samples are given below:
+Second we test the gamma(10,10) with a right bound 0.01 and the exponential(10) with a right bound 0, the code to do so and the histogram of the resulting samples are given below:
 
 \begin{lstlisting}[frame=single]
 sample<-ars(10000,function(x){(10^10)/gamma(10)*x^9*exp(-10*x)},c(0.01, Inf))
@@ -177,9 +177,25 @@ sample<-ars(10000,function(x){10*exp(-10*x)},c(0, Inf))
 \clearpage
 \begin{figure}[htbp!]
  \centering
-\caption{}
+\caption{left: gamma(10,10), right: exponential(10)}
   \includegraphics[width=1.0\textwidth]{gammaexp}
 \end{figure}
+
+Third we test the beta(10,10) with bounds$=(0,1)$ and the chi-square (df=10) with a right bound 0, the code to do so and the histogram of the resulting samples are given below:
+
+\begin{lstlisting}[frame=single]
+sample<-ars(10000,function(x){x^9*(1-x)^9/beta(10,10)},c(0,1))
+sample<-ars(10000,function(x){1/(2^5*gamma(5))*x^4*exp(-x/2)},c(0,Inf))
+
+
+\end{lstlisting}
+\clearpage
+\begin{figure}[htbp!]
+ \centering
+\caption{left: beta(10,10), right: chi-square(df=10)}
+  \includegraphics[width=1.0\textwidth]{betachi}
+\end{figure}
+
 
 
 

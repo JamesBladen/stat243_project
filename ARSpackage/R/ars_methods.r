@@ -13,7 +13,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
   
   if(object@bounds[1]==-Inf && object@bounds[2]==Inf){
     
-    object@x[1]<-0
+    object@x[1]<-0.1
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     object@h_at_x[1]<-h_x
@@ -56,7 +56,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
       object@hprime_at_x[3]<-deriv1
     }
   }else if (object@bounds[1]==-Inf && object@bounds[2] !=Inf){
-    object@x[1]<-object@bounds[2]
+    object@x[1]<-object@bounds[2]-0.1
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     
@@ -82,7 +82,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
       object@hprime_at_x[2]<-deriv1
     }
   }else if (object@bounds[1]!=-Inf && object@bounds[2] ==Inf){
-    object@x[1]<-object@bounds[1]
+    object@x[1]<-object@bounds[1]+0.1
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     
@@ -109,8 +109,8 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
       object@hprime_at_x[2]<-deriv1
     }
   }else if(object@bounds[1]!=-Inf && object@bounds[2] !=Inf){
-    object@x<-object@bounds
-    
+    object@x[1]<-object@bounds[1]+0.1
+    object@x[2]<-object@bounds[2]-0.1
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     object@h_at_x[1]<-h_x
