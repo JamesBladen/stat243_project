@@ -147,14 +147,41 @@ In this method, we test the sample element $x^{*}$ from sampling method. Once it
 
 \section{Testing}
 
-For testing, we rigorously tested each method to ensure it was functioning properly.  To test the overall function, we sampled over a few well known distributions with different bounds, including:  normal, gamma, truncated normal.  The results are shown below.
+For testing, we rigorously tested each method to ensure it was functioning properly.  To test the overall function, we sampled over a few well known distributions with different bounds, including:  normal, gamma, truncated normal.  The results are shown below.\\
+First we test the standard normal with varying bounds , the code to do so and the histogram of the resulting samples are given below:
 
 \begin{lstlisting}[frame=single]
-ars_class <- new( "Cadapt_reject_sample", n=100, f_x = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, Inf) )
-
+samples <- ars(n=10000,fx=function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, Inf) )
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, 2))
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-Inf, 2))
+sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, Inf))
 
 
 \end{lstlisting}
+\clearpage
+\begin{figure}[htbp!]
+ \centering
+\caption{Histogram of samples from $f(x)=\frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}$ with different bounds}
+  \includegraphics[width=1.0\textwidth]{standardnormal}
+\end{figure}
+
+
+First we test the standard normal with varying bounds , the code to do so and the histogram of the resulting samples are given below:
+
+\begin{lstlisting}[frame=single]
+sample<-ars(10000,function(x){(10^10)/gamma(10)*x^9*exp(-10*x)},c(0.01, Inf))
+sample<-ars(10000,function(x){10*exp(-10*x)},c(0, Inf))
+
+
+\end{lstlisting}
+\clearpage
+\begin{figure}[htbp!]
+ \centering
+\caption{}
+  \includegraphics[width=1.0\textwidth]{gammaexp}
+\end{figure}
+
+
 
 
 %%%%%%%%%%%%%%%
