@@ -11,6 +11,3 @@ Description: This package is a program that samples from a given distribution
 License: N/A for now...
 Depends:
     methods
-Collate:
-    'adapt_reject.r'
-    'ars_methods.r'

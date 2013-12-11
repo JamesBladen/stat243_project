@@ -62,7 +62,7 @@ ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=0, ... ){
 library(methods) 
 library(numDeriv)
 setClass( "Cadapt_reject_sample", 
-          representation( n = "numeric", f_x = "function", bounds = "numeric" ,guess_of_mode="numeric" output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix",piecewise_integration="vector" ), 
+          representation( n = "numeric", f_x = "function", bounds = "numeric" ,guess_of_mode="numeric", output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix",piecewise_integration="vector" ), 
           prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
 )
 

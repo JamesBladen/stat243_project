@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.9.10)  11 DEC 2013 15:22
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.9.10)  11 DEC 2013 15:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -359,9 +359,13 @@ r/m/n/10.95 .
  []
 
 [2] [3]
+Underfull \hbox (badness 10000) in paragraph at lines 150--152
+
+ []
+
 LaTeX Font Info:    Try loading font information for OML+cmr on input line 154.
 
- (/usr/local/texlive/2013/texmf-dist/tex/latex/base/omlcmr.fd
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/bx/n' in size <10.95> not available
@@ -375,6 +379,10 @@ File: standardnormal.pdf Graphic file (type pdf)
 Package pdftex.def Info: standardnormal.pdf used on input line 165.
 (pdftex.def)             Requested size: 484.20988pt x 364.9618pt.
 
+Underfull \hbox (badness 10000) in paragraph at lines 169--170
+
+ []
+
 [5
 
  <./standardnormal.pdf>] <gammaexp.pdf, id=68, 476.78125pt x 359.3425pt>
@@ -383,12 +391,17 @@ File: gammaexp.pdf Graphic file (type pdf)
 <use gammaexp.pdf>
 Package pdftex.def Info: gammaexp.pdf used on input line 181.
 (pdftex.def)             Requested size: 484.20988pt x 364.9618pt.
- [6
 
- <./gammaexp.pdf>]
-<betachi.pdf, id=78, 476.78125pt x 359.3425pt>
+Underfull \hbox (badness 10000) in paragraph at lines 184--185
+
+ []
+
+[6
+
+ <./gammaexp.pdf>] <betachi.pdf, id=78, 476.78125pt x 359.3425pt>
 File: betachi.pdf Graphic file (type pdf)
- <use betachi.pdf>
+
+<use betachi.pdf>
 Package pdftex.def Info: betachi.pdf used on input line 196.
 (pdftex.def)             Requested size: 484.20988pt x 364.9618pt.
  [7
@@ -421,7 +434,7 @@ lic/amsfonts/cm/cmr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public
 amsfonts/cm/cmsy6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmti10.pfb>
-Output written on ars_report.pdf (8 pages, 249597 bytes).
+Output written on ars_report.pdf (8 pages, 250003 bytes).
 PDF statistics:
  150 PDF objects out of 1000 (max. 8388607)
  107 compressed objects within 2 object streams
