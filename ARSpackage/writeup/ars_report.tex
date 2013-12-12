@@ -81,7 +81,7 @@ If the target function is unbounded on either one or both sides, we make use of 
 
  \begin{itemize}
 
-  \item  If the target function is unbounded on both sides,  we set $x_{1}=maxf(x)-0.1$. If $h'(x_{1})>0$ then find an $x_{2}$ on the right side of $x_{1}$ s.t. $h'(x_{2})<0$. Similary, if $h'(x_{1})<0$ then find an $x_{2}$ on the left side of $x_{1}$ s.t. $h'(x_{2})>0$. In addition, if $h'(x_{1})=0$ which means $h(x)$ is symmetric to $x_{1}0$, then we set $(x_{1}-\frac{1}{2},x_{1}+\frac{1}{2})$ to be 2 starting points.
+  \item  If the target function is unbounded on both sides,  we set $x_{1}=maxf(x)-0.1$. If $h'(x_{1})>0$ then find an $x_{2}$ on the right side of $x_{1}$ s.t. $h'(x_{2})<0$. Similary, if $h'(x_{1})<0$ then find an $x_{2}$ on the left side of $x_{1}$ s.t. $h'(x_{2})>0$. In addition, if $h'(x_{1})=0$ which means $h(x)$ is symmetric to $x_{1}$, then we set $(x_{1}-\frac{1}{2},x_{1}+\frac{1}{2})$ to be 2 starting points.
 
 
   \item  If the target function is bounded only on left side,  and if the bound is less than $maxf(x)$, then we use the $maxf(x)$ as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$. Or, if the bound is greater than $maxf(x)$, we just use the bound as as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$.
