@@ -12,7 +12,6 @@
 #' 
 
 ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=-999, ... ){
-    
     # Initialize new ARS class
     ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, guess_of_mode=guess_of_mode, ... )
     ars_class <- gen_x( ars_class )
