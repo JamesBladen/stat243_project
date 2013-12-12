@@ -118,6 +118,21 @@ and,
 \end{displaymath}
 Moreover, if $f(x)$ is not a log-concave distribution, there will be some negative piecewise intergations in certain intervals. In this case, we just break the program and tell user that "function is not log concave".
 
+\begin{figure}[htbp!]
+\clearpage
+  \centering
+  \caption{ Testing of inverse CDF algorithm I}
+    \includegraphics[width=.73\textwidth]{inverse_CDF_1}
+\end{figure}
+
+\begin{figure}[htbp!]
+\clearpage
+ \centering
+ \caption{ Testing of inverse CDF algorithm II}
+   \includegraphics[width=.73\textwidth]{inverse_CDF_2}
+\end{figure}
+
+
 
 \subsection*{ sampling method }
 In this method, we sample a new $x^{*}$ from the $s_{k}(x)$ by using inverse CDF of  $s_{k}(x)$ with a random value $u \sim unif(0,1)$. Moreover, the inverse CDF algorithm we use is as follow: \\
@@ -180,26 +195,31 @@ sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, Inf))
 \end{figure}
 
 
-Second we test the gamma(10,10) with a right bound 0.01 and the exponential(10) with a right bound 0, the code to do so and the histogram of the resulting samples are given below:\newline
+Second we test the gamma(10,10) with a right bound 0.01 and the gamma(4,5) with bounds (0.8,3), the code to do so and the histogram of the resulting samples are given below:\newline
 
 \begin{lstlisting}[frame=single]
-sample<-ars(10000,function(x){(10^10)/gamma(10)*x^9*exp(-10*x)},c(0.01, Inf))
-sample<-ars(10000,function(x){10*exp(-10*x)},c(0, Inf))
+sample<-ars(10000,function(x){(10^10)/gamma(10)*x^9*exp(-10*x)},c(0.01, Inf),10)
+sample<-ars(10000,function(x){(5^4)/gamma(4)*x^3*exp(-5*x)},c(0.8,3),4)
 
 
 \end{lstlisting}
 \clearpage
 \begin{figure}[htbp!]
  \centering
-\caption{left: gamma(10,10), right: exponential(10)}
-  \includegraphics[width=1.0\textwidth]{gammaexp}
+\caption{left: gamma(10,10), right: gamma(4,5)}
+  \includegraphics[width=1.0\textwidth]{gamma}
 \end{figure}
+
+
+
 
 Third we test the beta(10,10) with bounds$=(0,1)$ and the chi-square (df=10) with a right bound 0, the code to do so and the histogram of the resulting samples are given below: \newline
 
 \begin{lstlisting}[frame=single]
 sample<-ars(10000,function(x){x^9*(1-x)^9/beta(10,10)},c(0,1))
 sample<-ars(10000,function(x){1/(2^5*gamma(5))*x^4*exp(-x/2)},c(0,Inf))
+
+
 
 
 \end{lstlisting}
@@ -210,7 +230,7 @@ sample<-ars(10000,function(x){1/(2^5*gamma(5))*x^4*exp(-x/2)},c(0,Inf))
   \includegraphics[width=1.0\textwidth]{betachi}
 \end{figure}
 
-For the beta distribution, you may note that the plotted distribution curve falls below the sampled histogram, this is simply because the density is not normalized.  But it is immediately apparent that the samples follow the same trend as the curve.  
+For the gamma(4,5) and beta distribution, you may note that the plotted distribution curve falls below the sampled histogram, this is simply because the density is not normalized.  But it is immediately apparent that the samples follow the same trend as the curve.  
 
 For methods testing, we have included in our final solution some simple lines of code to run, testing methods individually.  Please see our source code for more details.  
 
