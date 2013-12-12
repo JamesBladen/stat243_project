@@ -76,7 +76,7 @@ There are 4 possible cases:
   \begin{itemize}
   \item  If the target function is bounded on both sides, then we basically take 2 bounds as $x_{1}$, $x_{2}$.
  \end{itemize}
-If the target function is unbounded on either one or both sides, we make use of user's guess of mode to find the maximum of target function $f(x)$ (In theory, it should be the real mode.) by applying $optimize(\,)$ and use $(mode-100, mode+100)$ in the optimize function. We use this step in order to find the appropriate starting points more quickly.
+If the target function is unbounded on either one or both sides, we make use of user's guess of mode to find the maximum of target function $f(x)$ (In theory, it should be the real mode.) by applying $optimize(\,)$ and use $(mode-100, mode+100)$ as bounds in the optimize function. The step is to find the appropriate starting points more quickly.
 
 
  \begin{itemize}
