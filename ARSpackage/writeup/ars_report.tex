@@ -71,17 +71,17 @@ where\\
  First, two points are chosen as starting $x_1$ and $x_2$ values.  Next, $x^*$ values are drawn from the corresponding $u(x)$ distribution and the sampling criteria is tested.  This is repeated until the desired number of samples is obtained.    Brief descriptions of the most important methods are given below.  We've included more detailed source documentation as part of our solution as well (see \textit{a\_r\_sManual.pdf}).
 
 \subsection*{ gen\_x method }
-In this method, we generate two starting points i.e. $x_{1}$, $x_{2}$ according to user's input of bounds and guess of mode. \\
+In this method, we generate starting points according to user's input of bounds and guess of mode. \\
 There are 4 possible cases:
   \begin{itemize}
-  \item  If the target function is bounded on both sides, then we basically take 2 bounds as $x_{1}$, $x_{2}$.
+  \item  If the target function is bounded on both sides, then we take 2 bounds as $x_{1}$, $x_{2}$.
  \end{itemize}
-If the target function is unbounded on either one or both sides, we make use of user's guess of mode to find the maximum of target function $f(x)$ (In theory, it should be the real mode.) by applying $optimize(\,)$ and use $(mode-100, mode+100)$ as bounds in the optimize function. The step is to find the appropriate starting points more quickly.
+If the target function is unbounded on either one or both sides, we make use of user's guess of mode to find the maximum of target function $f(x)$ (In theory, it should be the real mode.) by applying $optimize(\,)$ and use $(mode-100, mode+100)$ as bounds in the optimize function. The idea is to find the appropriate starting points more quickly.
 
 
  \begin{itemize}
 
-  \item  If the target function is unbounded on both sides,  we set $x_{1}=maxf(x)-0.1$. If $h'(x_{1})>0$ then find an $x_{2}$ on the right side of $x_{1}$ s.t. $h'(x_{2})<0$. Similary, if $h'(x_{1})<0$ then find an $x_{2}$ on the left side of $x_{1}$ s.t. $h'(x_{2})>0$. In addition, if $h'(x_{1})=0$ which means $h(x)$ is symmetric to $x_{1}$, then we set $(x_{1}-\frac{1}{2},x_{1}+\frac{1}{2})$ to be 2 starting points.
+  \item  If the target function is unbounded on both sides,  we set $x_{1}$ close to $maxf(x)$. If $h'(x_{1})>0$ then find an $x_{2}$ on the right side of $x_{1}$ s.t. $h'(x_{2})<0$. Similary, if $h'(x_{1})<0$ then find an $x_{2}$ on the left side of $x_{1}$ s.t. $h'(x_{2})>0$. In addition, if $h'(x_{1})=0$ which means $h(x)$ is symmetric to $x_{1}$, then we set $(x_{1}-\frac{1}{2},x_{1}+\frac{1}{2})$ to be 2 starting points.
 
 
   \item  If the target function is bounded only on left side,  and if the bound is less than $maxf(x)$, then we use the $maxf(x)$ as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$. Or, if the bound is greater than $maxf(x)$, we just use the bound as as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$.
@@ -90,7 +90,7 @@ If the target function is unbounded on either one or both sides, we make use of 
 
  \end{itemize}
 
-Note that $h(x)=log(f(x))$ which is concave. So for any $x_1, x_2$, if $h'(x_1)h'(x_2)<0$, $x_1$ and $x_2$ would be on the different side of maximum of $h(x)$. And with the options of 2 to 4, we save $x$, $h(x)$ and $h'(x)$ for all $x$'s we computed in the process for later use.
+Note that $h(x)=log(f(x))$ which is concave. So for any $x_1, x_2$, if $h'(x_1)h'(x_2)<0$, $x_1$ and $x_2$ would be on the different side of maximum of $h(x)$. And with the options of 2 to 4, we save $x$, $h(x)$ and $h'(x)$ for all $x$'s we computed in the process for updating our upper and lowr function.
 
 
 \subsection*{ ev\_h method }
@@ -116,7 +116,23 @@ and,
 \begin{displaymath}
 \int_D e^{u_k(x')} dx' =\left.\sum_j  e^bx_j\right|_{z_{j-1}}^{z_j}.
 \end{displaymath}
-Moreover, if $f(x)$ is not a log-concave distribution, there will be some negative piecewise intergations in certain intervals. In this case, we just break the program and tell user that "function is not log concave".
+
+\clearpage
+
+\begin{figure}[htbp!]
+\clearpage
+  \centering
+  \caption{ Testing of inverse CDF algorithm I}
+    \includegraphics[width=.73\textwidth]{inverse_CDF_1}
+\end{figure}
+
+\begin{figure}[htbp!]
+\clearpage
+ \centering
+ \caption{ Testing of inverse CDF algorithm II}
+   \includegraphics[width=.73\textwidth]{inverse_CDF_2}
+\end{figure}
+
 
 
 \subsection*{ sampling method }
@@ -155,7 +171,9 @@ In this method, we calculate the $l_{k}(x)$ for $x^*$ which we sample from the s
 
 
 \subsection*{ update method }
-In this method, we test the sample element $x^{*}$ from sampling method. Once it is accepted, we add the $x^{*}$ into the set of outputs.
+In this method, we test the sample element $x^{*}$ from sampling method. If it is accepted in the first ratio,  we add the $x^{*}$ into the set of outputs. If it is rejected, then we calculate $h(x)$ and $h'(x)$, we then test for log concavity by seeing if $h(x)$ is between $u(x)$ and $l(x)$, then we create a new ratio and test our $x^*$, if it accepted we add it to the output and update our upper and lower bounds. If it is rejected, we update our bounds but do not put it in the output.
+
+
 
 %%%%%%%%%%%%%%%
 
@@ -172,7 +190,8 @@ sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, Inf))
 
 
 \end{lstlisting}
-\clearpage
+
+
 \begin{figure}[htbp!]
  \centering
 \caption{Histogram of samples from $f(x)=\frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}$ with different bounds}
@@ -180,26 +199,31 @@ sample<-ars(10000,function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))},c(-2, Inf))
 \end{figure}
 
 
-Second we test the gamma(10,10) with a right bound 0.01 and the exponential(10) with a right bound 0, the code to do so and the histogram of the resulting samples are given below:\newline
+Second we test the gamma(10,10) with a right bound 0.01 and the gamma(4,5) with bounds (0.8,3), the code to do so and the histogram of the resulting samples are given below:\newline
 
 \begin{lstlisting}[frame=single]
-sample<-ars(10000,function(x){(10^10)/gamma(10)*x^9*exp(-10*x)},c(0.01, Inf))
-sample<-ars(10000,function(x){10*exp(-10*x)},c(0, Inf))
+sample<-ars(10000,function(x){(10^10)/gamma(10)*x^9*exp(-10*x)},c(0.01, Inf),10)
+sample<-ars(10000,function(x){(5^4)/gamma(4)*x^3*exp(-5*x)},c(0.8,3),4)
 
 
 \end{lstlisting}
 \clearpage
 \begin{figure}[htbp!]
  \centering
-\caption{left: gamma(10,10), right: exponential(10)}
-  \includegraphics[width=1.0\textwidth]{gammaexp}
+\caption{left: gamma(10,10), right: gamma(4,5)}
+  \includegraphics[width=1.0\textwidth]{gamma}
 \end{figure}
+
+
+
 
 Third we test the beta(10,10) with bounds$=(0,1)$ and the chi-square (df=10) with a right bound 0, the code to do so and the histogram of the resulting samples are given below: \newline
 
 \begin{lstlisting}[frame=single]
 sample<-ars(10000,function(x){x^9*(1-x)^9/beta(10,10)},c(0,1))
 sample<-ars(10000,function(x){1/(2^5*gamma(5))*x^4*exp(-x/2)},c(0,Inf))
+
+
 
 
 \end{lstlisting}
@@ -210,7 +234,7 @@ sample<-ars(10000,function(x){1/(2^5*gamma(5))*x^4*exp(-x/2)},c(0,Inf))
   \includegraphics[width=1.0\textwidth]{betachi}
 \end{figure}
 
-For the beta distribution, you may note that the plotted distribution curve falls below the sampled histogram, this is simply because the density is not normalized.  But it is immediately apparent that the samples follow the same trend as the curve.  
+For the gamma(4,5) and beta distribution, you may note that the plotted distribution curve falls below the sampled histogram, this is simply because the density is not normalized.  But it is immediately apparent that the samples follow the same trend as the curve.  
 
 For methods testing, we have included in our final solution some simple lines of code to run, testing methods individually.  Please see our source code for more details.  
 
