@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.9.10)  12 DEC 2013 12:26
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.9.10)  12 DEC 2013 12:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -374,27 +374,27 @@ Package pdftex.def Info: inverse_CDF_2.pdf used on input line 132.
 
 
  <./inverse_CDF_1.pdf> <./inverse_CDF_2.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 179--181
+Underfull \hbox (badness 10000) in paragraph at lines 181--183
 
  []
 
-LaTeX Font Info:    Try loading font information for OML+cmr on input line 183.
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 185.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/bx/n' in size <10.95> not available
-(Font)              Font shape `OML/cmm/b/it' tried instead on input line 183.
+(Font)              Font shape `OML/cmm/b/it' tried instead on input line 185.
 LaTeX Font Info:    Font shape `OMS/cmr/bx/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 183.
+(Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 185.
  [5]
 <standardnormal.pdf, id=75, 476.78125pt x 359.3425pt>
 File: standardnormal.pdf Graphic file (type pdf)
  <use standardnormal.pdf>
-Package pdftex.def Info: standardnormal.pdf used on input line 194.
+Package pdftex.def Info: standardnormal.pdf used on input line 196.
 (pdftex.def)             Requested size: 484.20988pt x 364.9618pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 198--199
+Underfull \hbox (badness 10000) in paragraph at lines 200--201
 
  []
 
@@ -404,10 +404,10 @@ Underfull \hbox (badness 10000) in paragraph at lines 198--199
 File: gamma.pdf Graphic file (type pdf)
 
 <use gamma.pdf>
-Package pdftex.def Info: gamma.pdf used on input line 210.
+Package pdftex.def Info: gamma.pdf used on input line 212.
 (pdftex.def)             Requested size: 484.20988pt x 364.70786pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 216--217
+Underfull \hbox (badness 10000) in paragraph at lines 218--219
 
  []
 
@@ -417,7 +417,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 216--217
 File: betachi.pdf Graphic file (type pdf)
 
 <use betachi.pdf>
-Package pdftex.def Info: betachi.pdf used on input line 230.
+Package pdftex.def Info: betachi.pdf used on input line 232.
 (pdftex.def)             Requested size: 484.20988pt x 364.9618pt.
  [8
 
@@ -429,7 +429,7 @@ Here is how much of TeX's memory you used:
  8697 multiletter control sequences out of 15000+600000
  12932 words of font info for 48 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,6n,41p,464b,1727s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,6n,41p,508b,1727s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2013/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmbsy10.pfb></usr/local/texlive/2013/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2013/texmf-dist/fo
@@ -449,7 +449,7 @@ lic/amsfonts/cm/cmr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public
 amsfonts/cm/cmsy6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmti10.pfb>
-Output written on ars_report.pdf (9 pages, 1771884 bytes).
+Output written on ars_report.pdf (9 pages, 1771937 bytes).
 PDF statistics:
  167 PDF objects out of 1000 (max. 8388607)
  119 compressed objects within 2 object streams
