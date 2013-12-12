@@ -392,7 +392,11 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
         hstar <- hvals[1]
         hprimestar <- hvals[2]
         
-        
+        if (hstar < lower(object) || hstar > upper(object))
+        {
+          print("The function is not log concave")
+          break
+        }
         
         
         ratio<-exp(hstar-upper(object))
