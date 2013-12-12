@@ -13,9 +13,21 @@ setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
   
+  
+  
   if(object@bounds[1]==-Inf && object@bounds[2]==Inf){
     
-    object@x[1]<-0.1
+    
+    if(object@guess_of_mode!=-999){
+      bound<-c(object@guess_of_mode-100, object@guess_of_mode+100)
+      the_mode<-optimize(object@f_x, interval=bound, maximum=T)$maximum
+    }else{
+      the_mode<-0
+    }
+    
+    
+    object@x[1]<-the_mode - .1
+    
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     object@h_at_x[1]<-h_x
@@ -25,7 +37,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     if(sign(deriv1==1)){
       i<-2
       while(sign(deriv1)!=-1){
-        object@x[i]<- 1/2*(i-1)
+        object@x[i]<- object@x[1]+1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -36,7 +48,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     }else if(sign(deriv1)==-1){
       i<-2
       while(sign(deriv1)!=1){
-        object@x[i]<- -1/2*(i-1)
+        object@x[i]<- object@x[1]-1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -45,20 +57,41 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else{
-      object@x[2]<- -1/2
+      object@x[2]<- object@x[1]-1/2
       h_x<-log(object@f_x(object@x[2]))
       deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
       object@h_at_x[2]<-h_x
       object@hprime_at_x[2]<-deriv1
       
-      object@x[3]<- 1/2
+      object@x[3]<- object@x[1]+1/2
       h_x<-log(object@f_x(object@x[3]))
       deriv1 <- (1/object@f_x(object@x[3])) *genD(object@f_x,object@x[3])$D[1]
       object@h_at_x[3]<-h_x
       object@hprime_at_x[3]<-deriv1
     }
   }else if (object@bounds[1]==-Inf && object@bounds[2] !=Inf){
-    object@x[1]<-object@bounds[2]-0.1
+    
+    
+    if(object@guess_of_mode!=-999){
+      bound<-c(object@guess_of_mode-100, object@guess_of_mode+100)
+      the_mode<-optimize(object@f_x, interval=bound, maximum=T)$maximum
+      
+      if(the_mode > object@bounds[2])
+      {
+        the_mode<-object@bounds[2]
+      }
+    }else{
+      the_mode<-object@bounds[2]
+    }
+    
+    
+    
+    object@x[1]<-the_mode + min(0.1, abs(the_mode - object@bounds[1])) -.01
+    
+    
+    
+    
+    
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     
@@ -68,7 +101,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     if(sign(deriv1)==-1){
       i<-2
       while(sign(deriv1)!=1){
-        object@x[i]<- object@bounds[2]- 1/2*(i-1)
+        object@x[i]<- object@x[1]- 1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -77,14 +110,38 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else{
-      object@x[2]<-object@bounds[2] -1/2
+      object@x[2]<-object@x[1] -1/2
       h_x<-log(object@f_x(object@x[2]))
       deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
       object@h_at_x[2]<-h_x
       object@hprime_at_x[2]<-deriv1
     }
   }else if (object@bounds[1]!=-Inf && object@bounds[2] ==Inf){
-    object@x[1]<-object@bounds[1]+0.1
+    
+    
+    
+    
+    if(object@guess_of_mode!=-999){
+      bound<-c(object@guess_of_mode-100, object@guess_of_mode+100)
+      the_mode<-optimize(object@f_x, interval=bound, maximum=T)$maximum
+      
+      if(the_mode < object@bounds[1])
+      {
+        the_mode<-object@bounds[1]
+      }
+    }else{
+      the_mode<-object@bounds[1]
+    }
+    
+    
+    
+    
+    
+    object@x[1]<-the_mode - min(0.1, abs(the_mode - object@bounds[1])) +.01
+    
+    
+    
+    
     h_x<-log(object@f_x(object@x[1]))
     deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
     
@@ -95,7 +152,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     {
       i<-2
       while(sign(deriv1)!=-1){
-        object@x[i]<- object@bounds[1]+ 1/2*(i-1)
+        object@x[i]<- object@x[1]+ 1/2*(i-1)
         h_x<-log(object@f_x(object@x[i]))
         deriv1 <- (1/object@f_x(object@x[i])) *genD(object@f_x,object@x[i])$D[1]
         
@@ -104,13 +161,14 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         i<-i+1
       }
     }else{
-      object@x[2]<-object@bounds[1] +1/2
+      object@x[2]<-object@x[1] +1/2
       h_x<-log(object@f_x(object@x[2]))
       deriv1 <- (1/object@f_x(object@x[2])) *genD(object@f_x,object@x[2])$D[1]
       object@h_at_x[2]<-h_x
       object@hprime_at_x[2]<-deriv1
     }
   }else if(object@bounds[1]!=-Inf && object@bounds[2] !=Inf){
+    
     object@x[1]<-object@bounds[1]+0.1
     object@x[2]<-object@bounds[2]-0.1
     h_x<-log(object@f_x(object@x[1]))
@@ -123,6 +181,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     object@h_at_x[2]<-h_x
     object@hprime_at_x[2]<-deriv1
   }
+  
   return(object)
 } )
 
@@ -194,6 +253,14 @@ setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
   
   normalized_factor<-sum(piecewise_integration)
   weights<-piecewise_integration/normalized_factor
+  
+  #check for log cancavity
+  
+  if(sum(weights<0)!=0)
+  {
+    print("function is not log concave")
+    break
+  }
   
   object@weights<-weights
   object@normalized_factor<-normalized_factor
@@ -285,7 +352,7 @@ setMethod("lower", signature = "Cadapt_reject_sample", function(object) {
   m <- as.integer( x_star > object@x )
   j <- sum( m )
   j_plus_one <- j + 1
-    l_x_star <- (( object@mat_sorted[,1][j_plus_one] - x_star)*object@mat_sorted[,2][j] + (x_star- object@mat_sorted[,1][j])*object@mat_sorted[,2][j_plus_one] ) / ( object@mat_sorted[,1][j_plus_one] - object@mat_sorted[,1][j] ) 
+  l_x_star <- (( object@mat_sorted[,1][j_plus_one] - x_star)*object@mat_sorted[,2][j] + (x_star- object@mat_sorted[,1][j])*object@mat_sorted[,2][j_plus_one] ) / ( object@mat_sorted[,1][j_plus_one] - object@mat_sorted[,1][j] ) 
   return( l_x_star )
 } )
 
@@ -324,6 +391,9 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
     hvals <- ev_h(object)
     hstar <- hvals[1]
     hprimestar <- hvals[2]
+    
+
+    
     
     ratio<-exp(hstar-upper(object))
     

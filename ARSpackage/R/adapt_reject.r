@@ -11,10 +11,10 @@
 #' @return a vector containing \code{n} points sampled from the f(x) distribution
 #' 
 
-ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=0, ... ){
+ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=-999, ... ){
   
   # Initialize new ARS class
-  ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, guess_of_mode, ... )
+  ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, guess_of_mode=guess_of_mode, ... )
   ars_class <- gen_x( ars_class )
   
   #print( ars_class@output )
@@ -63,7 +63,11 @@ library(methods)
 library(numDeriv)
 setClass( "Cadapt_reject_sample", 
           representation( n = "numeric", f_x = "function", bounds = "numeric" ,guess_of_mode="numeric", output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix",piecewise_integration="vector" ), 
+<<<<<<< HEAD
+          prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20), guess_of_mode=5 ) 
+=======
           prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
+>>>>>>> 986b930dd9bebed6616fc55d0f93c11413237ba3
 )
 
 # Log normal distribution is prototype
@@ -83,7 +87,7 @@ setClass( "Cadapt_reject_sample",
 #' @rdname ars_method
 
 
-setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds, guess_of_mode) {
+setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds=c(-Inf,Inf), guess_of_mode=-999) {
     # User inputs
     
     # number of samples to take
