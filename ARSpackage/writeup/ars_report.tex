@@ -71,7 +71,7 @@ where\\
  First, two points are chosen as starting $x_1$ and $x_2$ values.  Next, $x^*$ values are drawn from the corresponding $u(x)$ distribution and the sampling criteria is tested.  This is repeated until the desired number of samples is obtained.    Brief descriptions of the most important methods are given below.  We've included more detailed source documentation as part of our solution as well (see \textit{a\_r\_sManual.pdf}).
 
 \subsection*{ gen\_x method }
-In this method, we generate two starting points i.e. $x_{1}$, $x_{2}$ according to user's input of bounds and guess of input. \\
+In this method, we generate two starting points i.e. $x_{1}$, $x_{2}$ according to user's input of bounds and guess of mode. \\
 There are 4 possible cases:
   \begin{itemize}
   \item  If the target function is bounded on both sides, then we basically take 2 bounds as $x_{1}$, $x_{2}$.
