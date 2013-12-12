@@ -14,10 +14,10 @@ setGeneric("gen_x", function(object){standardGeneric("gen_x")})
 setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     
     
-    
+    # First case, the function is bounded on neither side 
     if(object@bounds[1]==-Inf && object@bounds[2]==Inf){
         
-        
+        # If user specified a mode, we calculate the true mode and start from (true mode-0.1). If not we start from -0.1
         if(object@guess_of_mode!=-999){
             bound<-c(object@guess_of_mode-100, object@guess_of_mode+100)
             the_mode<-optimize(object@f_x, interval=bound, maximum=T)$maximum
@@ -33,7 +33,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         object@h_at_x[1]<-h_x
         object@hprime_at_x[1]<-deriv1
         
-        
+        # If the initial point has positive slope, we move left by 1/2 each time until we get a point with negative slope and use that point as our second initial point
         if(sign(deriv1==1)){
             i<-2
             while(sign(deriv1)!=-1){
@@ -45,6 +45,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
                 object@hprime_at_x[i]<-deriv1
                 i<-i+1
             }
+        # If the initial point has negative slope, we move right by 1/2 each time until we get a point with positive slope and use that point as our second initial point
         }else if(sign(deriv1)==-1){
             i<-2
             while(sign(deriv1)!=1){
@@ -56,6 +57,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
                 object@hprime_at_x[i]<-deriv1
                 i<-i+1
             }
+        # If the initial point has 0 slope, then we pick one point 1/2 on the left and one point 1/2 on the right
         }else{
             object@x[2]<- object@x[1]-1/2
             h_x<-log(object@f_x(object@x[2]))
@@ -69,9 +71,10 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
             object@h_at_x[3]<-h_x
             object@hprime_at_x[3]<-deriv1
         }
+    # Second case, the function is bounded only on the right
     }else if (object@bounds[1]==-Inf && object@bounds[2] !=Inf){
         
-        
+        # If user specified a mode, we calculate the true mode and start from (true mode+0.99), or (right bound-0.01) if (true mode+0.99) is outside the right bound. If not we start from (right bound-0.01)
         if(object@guess_of_mode!=-999){
             bound<-c(object@guess_of_mode-100, object@guess_of_mode+100)
             the_mode<-optimize(object@f_x, interval=bound, maximum=T)$maximum
@@ -97,7 +100,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         
         object@h_at_x[1]<-h_x
         object@hprime_at_x[1]<-deriv1
-        
+        # If the initial point has negative slope, we move left by 1/2 each time until we get a point with positive slope and use that point for second initial point 
         if(sign(deriv1)==-1){
             i<-2
             while(sign(deriv1)!=1){
@@ -109,6 +112,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
                 object@hprime_at_x[i]<-deriv1
                 i<-i+1
             }
+        # If the initial point has positive slope this means the function is monotonically increasing, then we take a point which is (initial point-1/2) for our second initial point
         }else{
             object@x[2]<-object@x[1] -1/2
             h_x<-log(object@f_x(object@x[2]))
@@ -116,11 +120,12 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
             object@h_at_x[2]<-h_x
             object@hprime_at_x[2]<-deriv1
         }
+    # Third case, the function is bounded only on the left
     }else if (object@bounds[1]!=-Inf && object@bounds[2] ==Inf){
         
         
         
-        
+      # If user specified a mode, we calculate the true mode and start from (true mode-0.99), or (left bound+0.01) if (true mode-0.99) is outside the left bound. If not we start from (left bound+0.01)
         if(object@guess_of_mode!=-999){
             bound<-c(object@guess_of_mode-100, object@guess_of_mode+100)
             the_mode<-optimize(object@f_x, interval=bound, maximum=T)$maximum
@@ -147,7 +152,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
         
         object@h_at_x[1]<-h_x
         object@hprime_at_x[1]<-deriv1
-        
+        # If the initial point has positive slope, we move right by 1/2 each time until we get a point with negative slope and use that point for second initial point 
         if(sign(deriv1)==1)
         {
             i<-2
@@ -160,6 +165,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
                 object@hprime_at_x[i]<-deriv1
                 i<-i+1
             }
+        # If the initial point has negative slope this means the function is monotonically decreasing, then we take a point which is (initial point+1/2) for our second initial point
         }else{
             object@x[2]<-object@x[1] +1/2
             h_x<-log(object@f_x(object@x[2]))
@@ -167,6 +173,7 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
             object@h_at_x[2]<-h_x
             object@hprime_at_x[2]<-deriv1
         }
+    # Fourth case, the function is bounded on both sides. We pick one initial point to be the (left bound+0.1) and one initial point to be the (right bound-0.1)
     }else if(object@bounds[1]!=-Inf && object@bounds[2] !=Inf){
         
         object@x[1]<-object@bounds[1]+0.1
@@ -224,33 +231,28 @@ setGeneric("s_x", function(object){standardGeneric("s_x")})
 
 
 setMethod("s_x", signature = "Cadapt_reject_sample", function(object){
-    #Normalizing u_x
-    #The basic idea is just to find out the integration of u_x on the domain by adding the integration of each piecewise of u_x
-    #Seprate the domain into 3 parts: [x_0,z[1]],[z[1],z[k-1]],[z[k-1],x_a],x_0 and x_a are lower and upper bounds of the domain. If domain is R, then x_0=-inf, x_a=inf
-    #Use a forloop to calculate the integrations in [z[1],z[k-1]],each piece i is a line with slope h_prime(x[i]) and pass through the point (x[i],h(x[i])), and is from z[i-1] to z[i]
-    # k is number of xs 
     k <- length(object@x)
-    #Figure out the vector of z
     z<-vector()
-    
+    # Sort x, h_at_x and hprime_at_x by x
     mat<-cbind(object@x,object@h_at_x,object@hprime_at_x)
     mat_sort<-mat[order(mat[,1]),]
+    # Create lower and upper bound vector for sorted x, h_at_x and hprime_at_x
     x_low<-mat_sort[,1][-k]
     x_high<-mat_sort[,1][-1]
     h_at_x_low<-mat_sort[,2][-k]
     h_at_x_high<-mat_sort[,2][-1]
     hprime_at_x_low<-mat_sort[,3][-k]
     hprime_at_x_high<-mat_sort[,3][-1]
+    # Create abcissa vector z
     z_prime<-(h_at_x_high-h_at_x_low-x_high*hprime_at_x_high+x_low*hprime_at_x_low)/(hprime_at_x_low-hprime_at_x_high)
     z<-c(object@bounds[1],z_prime,object@bounds[2])
-    
+    # Create lower and upper bound vector of z
     z_low<-z[-(k+1)]
     z_high<-z[-1]
+    # Calculate the integration of exp(u_x) in each interval. If hprime_at_x is 0 so the integration is NaN, we calculate it manually 
     piecewise_integration<-(1/mat_sort[,3])*(exp(mat_sort[,3]*z_high+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])-(exp(mat_sort[,3]*z_low+mat_sort[,2]-mat_sort[,3]*mat_sort[,1])))
-    
-    
     piecewise_integration[which(piecewise_integration=="NaN")]<-exp(mat_sort[,2][which(piecewise_integration=="NaN")]) *(z_high[which(piecewise_integration=="NaN")]-z_low[which(piecewise_integration=="NaN")])
-    
+    # Sum up the integration on each interval to find the normalizing factor for exp(u_x), and find the weights for integration on each interval
     normalized_factor<-sum(piecewise_integration)
     weights<-piecewise_integration/normalized_factor
     
@@ -288,9 +290,11 @@ setMethod("sampling", signature = "Cadapt_reject_sample", function(object) {
     # Sample uniform random number
     object@samples[1] <- runif( 1, min = 0, max = 1 )
     
-    # Sample x_star from sk(x)
+    # Sample x_star from s_k(x) 
     k<-length(object@x)
+    # First sample the interval in which we will sample x_star
     region_x_star<-sample(1:k,1,prob=object@weights)
+    # Using inverse CDF to sample x_star within the interval. Seperate cases for hprime_at_x is 0 and is not 0
     a<-object@mat_sorted[,3][region_x_star]
     
     if(a==0){
@@ -326,9 +330,10 @@ setGeneric("upper", function(object){standardGeneric("upper")})
 
 setMethod("upper", signature = "Cadapt_reject_sample", function(object) {
     x_star<-object@samples[2]
-    #Calculate u of x star using the same method as we calculate l of x star
+    # Find which interval of z does x_star fall in 
     M<-as.integer(x_star > object@z)
     J<-sum(M)
+    # Evaluate u_j(x_star)
     u_x_star<-object@mat_sorted[,2][J]+(x_star-object@mat_sorted[,1][J])*object@mat_sorted[,3][J]
     return(u_x_star)
 } )
@@ -347,11 +352,12 @@ setGeneric("lower", function(object, x_st, ... ){standardGeneric("lower")})
 
 
 setMethod("lower", signature = "Cadapt_reject_sample", function(object) {
-    # find where x_star is in the range
     x_star<-object@samples[2]
+    # Find which interval of x does x_star fall in 
     m <- as.integer( x_star > object@x )
     j <- sum( m )
     j_plus_one <- j + 1
+    # Evaluate l_j(x_star)
     l_x_star <- (( object@mat_sorted[,1][j_plus_one] - x_star)*object@mat_sorted[,2][j] + (x_star- object@mat_sorted[,1][j])*object@mat_sorted[,2][j_plus_one] ) / ( object@mat_sorted[,1][j_plus_one] - object@mat_sorted[,1][j] ) 
     return( l_x_star )
 } )
