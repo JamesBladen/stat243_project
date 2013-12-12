@@ -62,21 +62,34 @@ The image below is a graphical representation of the algorithm.
 
 We decided to utilize the S4 class as a format for our code.  It was chosen because of the formal structure and modularity.  These properties also made it easy to test and create in a very piecewise manner.  The general structure to the code is a follows:  A wrapper function \textit{a\_r\_s} runs the sampling method.  The program is run as follows:
 
- $$ ars \leftarrow a\_r\_s( \mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{f\_x} = \{f(x) \, to \, sample\}, \mathbf{bounds}= \{ bds \, of \, f(x)\, \} ) $$
+ $$sample\gets ars( \mathbf{n}, \mathbf{f\_x}, \mathbf{bounds},\mathbf{guess\_of\_mode}) $$
+where\\ 
+ $\mathbf{n}=\{\# \, of \, samps \, desired \}, \mathbf{f\_x} = \{f(x) \, to \, sample\}, $\\ $\quad \mathbf{bounds}= \{ bds \, of \, f(x)\, \},   \mathbf{guess\_of\_mode}= \{user's\, guess \,of \,function \, mode\}$
  
  This will return a \textit{Cadapt\_reject\_sample} class which contains sampled points in \textit{ars@samples}.  The class itself contains all the methods and variables required to perform adaptive rejection sampling.  
  
  First, two points are chosen as starting $x_1$ and $x_2$ values.  Next, $x^*$ values are drawn from the corresponding $u(x)$ distribution and the sampling criteria is tested.  This is repeated until the desired number of samples is obtained.    Brief descriptions of the most important methods are given below.  We've included more detailed source documentation as part of our solution as well (see \textit{a\_r\_sManual.pdf}).
 
 \subsection*{ gen\_x method }
-In this method, we generate two initial points i.e. $x_{1}$, $x_{2}$ according to user's input of bounds. \\
+In this method, we generate two starting points i.e. $x_{1}$, $x_{2}$ according to user's input of bounds and guess of input. \\
 There are 4 possible cases:
-  \begin{enumerate}
-  \item  If the target function is bounded on both sides, then we take 2 bounds as $x_{1}$, $x_{2}$.
-  \item  If the target function is bounded only on left side,  we take $x_{1}$ as the left bound, and find an $x$ on the right side of $x_{1}$ s.t. $h'(x_{1})h'(x)<0$, then take $x$ as $x_{2}$.
-  \item  If the target function is bounded only on right side, we take  $x_{1}$ as the right bound, and find an $x$ on the left side of $x_{1}$ s.t. $h'(x_{1})h'(x)<0$, then take $x$ as  $x_{2}$.
-  \item  If the target function is unbounded on both sides, we first set $x_{1}=0$. If $h'(0)>0$ then find an $x$ on the right side of $x_{1}$ s.t. $h'(x)<0$, then take $x$ as $x_{2}$. Similary, if $h'(0)<0$ then find an $x$ on the left side of $x_{1}$ s.t. $h'(x)>0$, then take $x$ as  $x_{2}$. In addition, if $h'(0)=0$ which means $h(x)$ is symmetric to $x=0$, then we set $(-\frac{1}{2},\frac{1}{2})$ to be 2 starting value.
- \end{enumerate}
+  \begin{itemize}
+  \item  If the target function is bounded on both sides, then we basically take 2 bounds as $x_{1}$, $x_{2}$.
+ \end{itemize}
+If the target function is unbounded on either one or both sides, we make use of user's guess of mode to find the maximum of target function $f(x)$ (In theory, it should be the real mode.) by applying $optimize(\,)$ and use $(mode-100, mode+100)$ in the optimize function. We use this step in order to find the appropriate starting points more quickly.
+
+
+ \begin{itemize}
+
+  \item  If the target function is unbounded on both sides,  we set $x_{1}=maxf(x)-0.1$. If $h'(x_{1})>0$ then find an $x_{2}$ on the right side of $x_{1}$ s.t. $h'(x_{2})<0$. Similary, if $h'(x_{1})<0$ then find an $x_{2}$ on the left side of $x_{1}$ s.t. $h'(x_{2})>0$. In addition, if $h'(x_{1})=0$ which means $h(x)$ is symmetric to $x_{1}0$, then we set $(x_{1}-\frac{1}{2},x_{1}+\frac{1}{2})$ to be 2 starting points.
+
+
+  \item  If the target function is bounded only on left side,  and if the bound is less than $maxf(x)$, then we use the $maxf(x)$ as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$. Or, if the bound is greater than $maxf(x)$, we just use the bound as as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$.
+
+  \item  If the target function is bounded only on right side,  and if the bound is greater than $maxf(x)$, then we use the $maxf(x)$ as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$. Or, if the bound is smaller than $maxf(x)$, we just use the bound as as $x_{1}$, and find an $x_{2}$ on the right side of $maxf(x)$ s.t. $h'(x_{1})h'(x_{2})<0$.
+
+ \end{itemize}
+
 Note that $h(x)=log(f(x))$ which is concave. So for any $x_1, x_2$, if $h'(x_1)h'(x_2)<0$, $x_1$ and $x_2$ would be on the different side of maximum of $h(x)$. And with the options of 2 to 4, we save $x$, $h(x)$ and $h'(x)$ for all $x$'s we computed in the process for later use.
 
 
@@ -103,6 +116,7 @@ and,
 \begin{displaymath}
 \int_D e^{u_k(x')} dx' =\left.\sum_j  e^bx_j\right|_{z_{j-1}}^{z_j}.
 \end{displaymath}
+Moreover, if $f(x)$ is not a log-concave distribution, there will be some negative piecewise intergations in certain intervals. In this case, we just break the program and tell user that "function is not log concave".
 
 
 \subsection*{ sampling method }
