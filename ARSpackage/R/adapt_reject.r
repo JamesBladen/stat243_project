@@ -11,24 +11,24 @@
 #' @return a vector containing \code{n} points sampled from the f(x) distribution
 #' 
 
-ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=0, ... ){
-  
-  # Initialize new ARS class
-  ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, guess_of_mode, ... )
-  ars_class <- gen_x( ars_class )
-  
-  #print( ars_class@output )
-  
-  # While we do not have enough n samples, continue to sample
-  while( length( ars_class@output) < n_samples ){
+ars <- function( n_samples, fx, bounds=c(-Inf, Inf), guess_of_mode=-999, ... ){
     
-    ars_class <- s_x( ars_class )
-    ars_class <- sampling( ars_class )
-    ars_class <- update( ars_class )
+    # Initialize new ARS class
+    ars_class <- new( "Cadapt_reject_sample", n=n_samples, f_x = fx, bounds, guess_of_mode=guess_of_mode, ... )
+    ars_class <- gen_x( ars_class )
     
-  }
-
-  return(  ars_class@output )
+    #print( ars_class@output )
+    
+    # While we do not have enough n samples, continue to sample
+    while( length( ars_class@output) < n_samples ){
+        
+        ars_class <- s_x( ars_class )
+        ars_class <- sampling( ars_class )
+        ars_class <- update( ars_class )
+        
+    }
+    
+    return(  ars_class@output )
 }
 
 ######################################
@@ -63,7 +63,7 @@ library(methods)
 library(numDeriv)
 setClass( "Cadapt_reject_sample", 
           representation( n = "numeric", f_x = "function", bounds = "numeric" ,guess_of_mode="numeric", output = "vector", h_at_x = "vector", hprime_at_x = "vector", z = "vector", samples = "vector", x = "vector", weights = "vector", normalized_factor = "numeric", mat_sorted="matrix",piecewise_integration="vector" ), 
-          prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20) ) 
+          prototype=prototype( n=50L, f_x = function(x){(-1/(2*1^2)*exp((x-0)^2))}, bounds=c(-20, 20), guess_of_mode=5 ) 
 )
 
 # Log normal distribution is prototype
@@ -80,10 +80,10 @@ setClass( "Cadapt_reject_sample",
 #' @param f_x \code{function} for distribution to sample from
 #' @param bounds \code{vector} of distribution bounds
 #' @param guess_of_mode \code{numeric} optional idea of where distribution is located
-#' @rdname ars_method
+#' @rdname initialize
 
 
-setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds, guess_of_mode) {
+setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bounds=c(-Inf,Inf), guess_of_mode=-999) {
     # User inputs
     
     # number of samples to take
@@ -96,31 +96,31 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
     .Object@guess_of_mode<-guess_of_mode
     
     
-  # Values not input by the user
+    # Values not input by the user
     
     #the x points that we have evaluated h_x for
     .Object@x <- vector()
     # samples to return to user
-  .Object@output <- vector()
-  # H(x) and H'(x) evaluated at a few points
-  .Object@h_at_x <- vector()
-  .Object@hprime_at_x <- vector()
-  # abscissa of all points
-  .Object@z <- vector()
-  #  Random number for adapt/reject
-  .Object@samples <- vector()
-  #the weight of each piece of the integration of the upper function
-  .Object@weights <- vector()
-  #the integral of the upper bound function
-  .Object@normalized_factor <- numeric()
-  #The matrix of x, h_at_x and hprime_at_x sorted based on x
-  .Object@mat_sorted<-matrix()
-  #The vector of the integration of u_x on each piece
-  .Object@piecewise_integration<-vector()
+    .Object@output <- vector()
+    # H(x) and H'(x) evaluated at a few points
+    .Object@h_at_x <- vector()
+    .Object@hprime_at_x <- vector()
+    # abscissa of all points
+    .Object@z <- vector()
+    #  Random number for adapt/reject
+    .Object@samples <- vector()
+    #the weight of each piece of the integration of the upper function
+    .Object@weights <- vector()
+    #the integral of the upper bound function
+    .Object@normalized_factor <- numeric()
+    #The matrix of x, h_at_x and hprime_at_x sorted based on x
+    .Object@mat_sorted<-matrix()
+    #The vector of the integration of u_x on each piece
+    .Object@piecewise_integration<-vector()
     
-  
-  validObject(.Object)
-  .Object
+    
+    validObject(.Object)
+    .Object
 })
 
 
@@ -131,12 +131,12 @@ setMethod("initialize", "Cadapt_reject_sample", function(.Object, n , f_x, bound
 #' 
 #'  The main objective of this validity check is to ensure at creation that the number of samples desired is a positive integer
 #' @param object An \code{adapt_reject_sample} object
-#' @rdname ars_method
+#' @rdname validity 
 
 validity_ars <- function(object) {
-  # checking for non-integer values
-  if( object@n %% 1 != 0  ) { stop( "Input number of steps is not an integer" ) }
-  if(  object@n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
+    # checking for non-integer values
+    if( object@n %% 1 != 0  ) { stop( "Input number of steps is not an integer" ) }
+    if(  object@n <= 0  ) { stop( "Input number of steps is not greater than zero" ) }
 } 
 
 setValidity( "Cadapt_reject_sample", validity_ars )

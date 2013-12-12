@@ -1,0 +1,86 @@
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[latin1]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge ARS Manual}}
+\par\bigskip{\large \today}
+\end{center}
+\inputencoding{utf8}
+\HeaderA{ARSpackage}{ARSpackage: an Adaptive Rejection Sampler}{ARSpackage}
+\keyword{package, rejection sampling}{ARSpackage}
+%
+\begin{Description}\relax
+Final project for Statistics 243, an R package that performs adaptive rejection sampling, first proposed by Gilks and Wild in 1992.
+\end{Description}
+%
+\begin{Details}\relax
+
+\Tabular{ll}{
+Package: & ARSpackage\\{}
+Type: & Package\\{}
+Version: & 1.0\\{}
+Date: & 2013-12-13\\{}
+Depends: & methods, numDeriv\\{}
+Collate: & 'adapt\_reject.r', 'ars\_methods.r'
+}
+\end{Details}
+%
+\begin{Author}\relax
+J. Bladen, L. Felberg, H.W. Tsao, S. Tu
+\end{Author}
+%
+\begin{References}\relax
+Gilks, Wild, 1992. \url{http://faculty.chicagobooth.edu/hedibert.lopes/teaching/ccis2010/1992GilksWild.pdf}.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\url{https://bitbucket.org/lfelberg/stat243_final_proj} \\{}
+\url{https://github.com/paciorek/stat243-fall-2013/tree/master/project}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+	# Testing the normal distribution from -Inf to Inf
+	n_samples <- ars( 10000, fx = function(x){(1/sqrt(2*pi)*exp((-(x-0)^2)/2))}, bounds=c(-Inf, Inf) )
+
+	# Testing Gamma(2,1) on interval[0.01,Inf]
+	sample<-ars(10000,function(x){1/2*x*exp(-x)},c(0.01, Inf))
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{ars}{ars: The adapt\_reject function}{ars}
+%
+\begin{Description}\relax
+This calls the class Cadapt\_reject\_sample and its
+methods.  It returns a vector of samples generated via
+the Adaptive rejective sampling method.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ars(n_samples, fx, bounds = c(-Inf, Inf),
+    guess_of_mode = 0, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{n\_samples:}] Number of samples desired from
+distribution
+
+\item[\code{fx:}] Function to sample from
+
+\item[\code{bounds:}] Bounds of function of interest.  The
+default is an unbounded function
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a vector containing \code{n} points sampled from the f(x)
+distribution
+\end{Value}

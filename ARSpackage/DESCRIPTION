@@ -1,13 +1,16 @@
 Package: ARSpackage
 Type: Package
-Title: STAT 243 Final project
+Title: Adaptive Rejection Sampler: STAT 243 Final project
 Version: 1.0
-Date: 2013-11-18
+Date: 2013-12-13
 Author: J. Bladen, L. Felberg, H.W. Tsao, S. Tu
 Maintainer: L. Felberg <lfelberg@berkeley.edu>
 Description: This package is a program that samples from a given distribution
     using an Adaptive Rejection Sampler (ARS).  It uses a method described in a
     Wild and Gilks paper from 1992.
-License: N/A for now...
 Depends:
-    methods, numDeriv
+    methods,
+    numDeriv
+Collate:
+    'adapt_reject.r'
+    'ars_methods.r'

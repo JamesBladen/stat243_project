@@ -32,6 +32,10 @@
   containing sampled points to return to user.}
   \item{\code{mat_sorted}:}{Variable of class
   \code{"matrix"}, containing x values, their corresponding
-  h and h prime values, sorted by increasing x.} }
+  h and h prime values, sorted by increasing x.}
+  \item{\code{guess_of_mode}:}{Variable of class
+  \code{"numeric"}, containing an optional user input guess
+  of the mode of the distribution, should be within 200 of
+  actual mode.} }
 }
 
