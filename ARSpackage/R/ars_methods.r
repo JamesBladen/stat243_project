@@ -176,8 +176,8 @@ setMethod("gen_x", signature = "Cadapt_reject_sample", function(object) {
     # Fourth case, the function is bounded on both sides. We pick one initial point to be the (left bound+0.1) and one initial point to be the (right bound-0.1)
     }else if(object@bounds[1]!=-Inf && object@bounds[2] !=Inf){
         
-        object@x[1]<-object@bounds[1]+0.1
-        object@x[2]<-object@bounds[2]-0.1
+        object@x[1]<-object@bounds[1]+.1
+        object@x[2]<-object@bounds[2]-.1
         h_x<-log(object@f_x(object@x[1]))
         deriv1 <- (1/object@f_x(object@x[1])) *genD(object@f_x,object@x[1])$D[1]
         object@h_at_x[1]<-h_x
@@ -398,7 +398,7 @@ setMethod("update", signature = "Cadapt_reject_sample", function(object) {
         hstar <- hvals[1]
         hprimestar <- hvals[2]
         
-        if(hstar < lower(object) || hstar > upper(object)){
+        if(hstar > upper(object)){
           print("function is not log concave")
           break
         }
